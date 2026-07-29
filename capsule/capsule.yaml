@@ -1,0 +1,7 @@
+capsa_version: "0.1.0"
+project:
+  name: "Capsa"
+  slug: capsa
+  repo: "https://github.com/eliezeravihail/capsa"
+  created: 2026-07-29
+status: maintained
