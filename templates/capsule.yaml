@@ -1,0 +1,7 @@
+capsa_version: "0.1.0"
+project:
+  name: "<Project Name>"
+  slug: <project-slug>
+  repo: "<https://github.com/org/repo>"
+  created: <YYYY-MM-DD>
+status: planning

@@ -1,0 +1,7 @@
+capsa_version: "0.1.0"
+project:
+  name: "Screen Recorder"
+  slug: screen-recorder
+  repo: "https://github.com/acme/screen-recorder"
+  created: 2026-07-01
+status: maintained
