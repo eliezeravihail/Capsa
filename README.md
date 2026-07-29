@@ -35,10 +35,11 @@ that is:
 
 ## What's in a capsule
 
-Installed into a target project as a single `capsule/` directory:
+Installed into a target project as a single `.capsa/` directory (the
+accepted dot-directory convention, like `.git/` or `.github/`):
 
 ```
-capsule/
+.capsa/
 ├── capsule.yaml          # manifest: capsa_version, project identity, status
 ├── charter.md            # the project's upfront vision, constraints, ground rules
 ├── requirements/         # NNNN-slug.md — needs, formally trackable to met/unmet with evidence
@@ -73,7 +74,7 @@ JSON Schemas in [`schema/`](./schema/). Copy-ready starters live in
 Capsa is passive, so "using it" just means reading and writing the files
 per the spec:
 
-- **A human** reads `capsule/` in any editor, or on GitHub.
+- **A human** reads `.capsa/` in any editor, or on GitHub.
 - **An orchestration engine** (e.g. a multi-agent team manager) is the
   writer: it reads the capsule to load project context and writes records
   back as part of its normal commits. Capsa holds the project truth; the
@@ -90,7 +91,7 @@ The format is the source of truth; validation is a convenience, never
 required. A dependency-free checker is provided:
 
 ```sh
-python3 validator/validate.py path/to/project/capsule
+python3 validator/validate.py path/to/project/.capsa
 ```
 
 It checks the manifest and every record's frontmatter against
@@ -98,7 +99,7 @@ It checks the manifest and every record's frontmatter against
 
 ## Status
 
-`capsa_version` **0.1.0** — see [`VERSION`](./VERSION) and
+`capsa_version` **0.2.0** — see [`VERSION`](./VERSION) and
 [`SPEC.md`](./SPEC.md). The format is young; the shape is deliberately
 small so it can stabilize.
 

@@ -1,6 +1,6 @@
 # Capsa Specification
 
-**Version 0.1.0**
+**Version 0.2.0**
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -40,11 +40,12 @@ The key words MUST, SHOULD, and MAY are used as in RFC 2119.
 
 ## 2. Location & layout
 
-A capsule is a single directory named `capsule/` at the root of a project
-repository. A project MUST have at most one capsule.
+A capsule is a single hidden directory named `.capsa/` at the root of a
+project repository — the accepted dot-directory convention for project
+tooling (like `.git/`, `.github/`). A project MUST have at most one capsule.
 
 ```
-capsule/
+.capsa/
 ├── capsule.yaml          REQUIRED — the manifest (§3)
 ├── charter.md            OPTIONAL — vision, constraints, ground rules (§4.8)
 ├── requirements/         OPTIONAL — NNNN-slug.md (§4.1)
@@ -127,7 +128,7 @@ only thing an operator's registry needs to know is that the project exists
 and where it lives; everything else is inside.
 
 ```yaml
-capsa_version: "0.1.0"        # REQUIRED — spec version this capsule conforms to
+capsa_version: "0.2.0"        # REQUIRED — spec version this capsule conforms to
 project:
   name: "Payments Gateway"    # REQUIRED — human name
   slug: payments-gateway      # REQUIRED — kebab-case identifier
@@ -356,4 +357,7 @@ source of truth.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.1.0**.
+This document defines version **0.2.0**.
+
+Changelog: 0.2.0 — the capsule directory is `.capsa/` (was `capsule/` in
+0.1.0); a 0.1.0 capsule is migrated by renaming the directory.
