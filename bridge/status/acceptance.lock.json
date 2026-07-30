@@ -1,0 +1,50 @@
+{
+ "locked": true,
+ "chosen_option": "A",
+ "criteria": [
+  {
+   "id": "c1",
+   "text": "Given a plan whose requirement_refs names a requirement id absent from requirements/, when the validator runs, it reports which plan file an"
+  },
+  {
+   "id": "c2",
+   "text": "Given a release whose issue_refs includes an issue that is not closed, when the validator runs, it reports the release and the still-open is"
+  },
+  {
+   "id": "c3",
+   "text": "Given a release, when the validator runs, it reports if the capsule holds any must-level requirement that is not status: met, naming the req"
+  },
+  {
+   "id": "c4",
+   "text": "Given any issue with severity S1 anywhere in the capsule that is not closed, when the validator runs, it reports it as an open S1"
+  },
+  {
+   "id": "c5",
+   "text": "Given a decision_ref or discussion_ref on any record that names an id absent from its target directory, when the validator runs, it reports "
+  },
+  {
+   "id": "c6",
+   "text": "Given a fully-conforming capsule whose records cross-reference each other correctly, when the validator runs, it reports zero findings"
+  },
+  {
+   "id": "c7",
+   "text": "Given a calling program (not a human at a terminal) invoking the validator, it can obtain the same findings in a form it can parse programma"
+  }
+ ],
+ "note": "נעול בשער הרעיון ע\"י המנכ\"ל. HaMenahel משכתבת קובץ זה מהמסד בכל גבול turn — עריכה כאן לא משנה מול מה נמדדת האספקה. הקישור בין קריטריון לבדיקה נעשה ב-bridge/status/verify.json תחת \"bindings\".",
+ "runners": [
+  "cargo",
+  "dotnet",
+  "go",
+  "gradle",
+  "jest",
+  "maven",
+  "mocha",
+  "node-test",
+  "phpunit",
+  "pytest",
+  "rspec",
+  "unittest",
+  "vitest"
+ ]
+}
