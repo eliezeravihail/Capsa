@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Capsa capsule validator — read-only, stdlib-only, optional.
 
-Usage:  python3 validator/validate.py path/to/capsule
+Usage:  python3 validator/validate.py [--json] path/to/capsule
 
 Checks conformance rules SPEC.md §5 (manifest, per-type frontmatter,
 naming/numbering, verification-evidence rules). It only reads; it never
 writes or "fixes". Exit 0 = conforming, 1 = findings, 2 = not a capsule.
+
+`--json` prints `{"conforming": bool, "findings": [{"path", "message"}, ...]}`
+to stdout instead of the human text — the exact same findings, not a
+separately-derived summary (decisions/0004-single-findings-source.md): a
+calling program should parse this, never the human-readable lines, which
+are free text subject to wording changes the JSON is not.
 
 The spec is the source of truth; this checker mirrors schema/ for the
 subset of YAML that capsule frontmatter actually uses (flat scalar keys,
@@ -14,6 +20,7 @@ used when available; otherwise a built-in mini-parser covers that subset.
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -140,11 +147,14 @@ def frontmatter(path: Path):
 # --------------------------------------------------------------------------
 
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}")
-findings: list[str] = []
+# One structured list, appended to as checks run. Both renderings at the
+# bottom of validate() — human text and --json — read from this SAME list;
+# neither ever collects its own (decisions/0004-single-findings-source.md).
+findings: list[dict] = []
 
 
 def err(path, msg):
-    findings.append(f"{path}: {msg}")
+    findings.append({"path": str(path), "message": msg})
 
 
 def is_date(v) -> bool:
@@ -202,10 +212,15 @@ def numbered(dirpath: Path, pattern=NUMBERED):
         yield f, fm
 
 
-def validate(root: Path) -> int:
+def validate(root: Path, *, fmt: str = "text") -> int:
+    findings.clear()  # a fresh run, not accumulation across repeat calls
     man_path = root / "capsule.yaml"
     if not man_path.exists():
-        print(f"not a capsule: {man_path} missing")
+        msg = f"not a capsule: {man_path} missing"
+        if fmt == "json":
+            print(json.dumps({"conforming": False, "error": msg, "findings": []}))
+        else:
+            print(msg)
         return 2
     man = frontmatter_free_yaml(man_path)
     if isinstance(man, str):
@@ -318,13 +333,17 @@ def validate(root: Path) -> int:
                 if kind == "code" and not fm.get("code_globs"):
                     err(f, "kind=code requires non-empty code_globs (SPEC §4.9)")
 
-    if findings:
+    conforming = not findings
+    if fmt == "json":
+        print(json.dumps({"conforming": conforming, "findings": findings},
+                         ensure_ascii=False))
+    elif conforming:
+        print("conforming capsule ✔")
+    else:
         print(f"NON-CONFORMING — {len(findings)} finding(s):")
-        for line in findings:
-            print("  -", line)
-        return 1
-    print("conforming capsule ✔")
-    return 0
+        for f in findings:
+            print("  -", f"{f['path']}: {f['message']}")
+    return 0 if conforming else 1
 
 
 def frontmatter_free_yaml(path: Path):
@@ -337,7 +356,10 @@ def frontmatter_free_yaml(path: Path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    args = sys.argv[1:]
+    fmt = "json" if "--json" in args else "text"
+    args = [a for a in args if a != "--json"]
+    if len(args) != 1:
         print(__doc__)
         sys.exit(2)
-    sys.exit(validate(Path(sys.argv[1])))
+    sys.exit(validate(Path(args[0]), fmt=fmt))
