@@ -1,13 +1,36 @@
 {
-  "cards": [
-    {
-      "id": "concept-continue-capsa",
-      "title": "המשך פיתוח Capsa — קונספט לסבב הבא",
-      "assignee": "aharon",
-      "status": "review",
-      "acceptance": [],
-      "scope": ["docs/product/CONCEPT.md"],
-      "rounds": 0
-    }
-  ]
+ "cards": [
+  {
+   "id": "concept-continue-capsa",
+   "title": "המשך פיתוח Capsa — קונספט לסבב הבא",
+   "assignee": "aharon",
+   "status": "review",
+   "acceptance": [],
+   "scope": [
+    "docs/product/CONCEPT.md"
+   ],
+   "rounds": 0,
+   "hm": {
+    "scope_granted": [
+     "docs/product/CONCEPT.md"
+    ],
+    "scope_refused": [],
+    "rounds": 0,
+    "base_sha": "8eda6a17",
+    "head_sha": "f75984fc",
+    "files_this_turn": [
+     "docs/product/CONCEPT.md"
+    ],
+    "ready_position": 0,
+    "assignment": {
+     "agent": "aharon",
+     "source": "declared",
+     "declared": "aharon",
+     "derived": "aharon"
+    },
+    "deps": []
+   }
+  }
+ ],
+ "mc_note": "שדות ה-mc נכתבים ע\"י HaMenahel — מצב הסביבה, לא הוראה. תביעת קובץ שכבר שייך למשימה פעילה אחרת נדחית, וההיסטוריה ב-git מנוהלת ע\"י המנוע."
 }
