@@ -1,0 +1,49 @@
+{
+  "gate": "concept",
+  "title": "המשך פיתוח Capsa — סגירת פער בין מה שה-SPEC מבטיח למה שהווליידטור בודק",
+  "summary": "Capsa v0.2.0 מבטיח ב-SPEC 'טענות ניתנות לבדיקה' (אין S1 פתוח בשחרור, כל must מסופק), אך validate.py לא מממש אותן ולא בודק שלמות הפניות בין רשומות. ה-dogfooding העצמי חשף זאת בפועל. ממליץ על כיוון A: להשלים את הבדיקות האלה בווליידטור הקיים, בלי שינוי SPEC/סכימה משמעותי ובלי קפיצת גרסה — מאמץ נמוך-בינוני, סיכון נמוך, תועלת לכל סוגי הצרכנים. כיוון B (אתחול+מיגרציה) מוקדם מדי על בסיס תקדים יחיד; כיוון C (הבהרות SPEC) הוא ניקיון לא-דחוף, ששני פריטים ממנו נכנסים ל-A כנחוצים.",
+  "artifacts": ["docs/product/CONCEPT.md"],
+  "options": [
+    {
+      "key": "A",
+      "title": "השלמת בדיקות ה-compliance שה-SPEC כבר מבטיח (חיזוק הווליידטור)",
+      "summary": "מאמץ נמוך-בינוני, סיכון נמוך — עובד על קובץ קיים בודד, בלי שינוי SPEC/סכימה; תועלת ישירה לכל ארבעת סוגי הצרכנים. מומלץ.",
+      "recommended": true,
+      "criteria": [
+        "Given a plan whose requirement_refs names a requirement id absent from requirements/, when the validator runs, it reports which plan file and which missing requirement id",
+        "Given a release whose issue_refs includes an issue that is not closed, when the validator runs, it reports the release and the still-open issue",
+        "Given a release, when the validator runs, it reports if the capsule holds any must-level requirement that is not status: met, naming the requirement",
+        "Given any issue with severity S1 anywhere in the capsule that is not closed, when the validator runs, it reports it as an open S1",
+        "Given a decision_ref or discussion_ref on any record that names an id absent from its target directory, when the validator runs, it reports the dangling reference and which record holds it",
+        "Given a fully-conforming capsule whose records cross-reference each other correctly, when the validator runs, it reports zero findings",
+        "Given a calling program (not a human at a terminal) invoking the validator, it can obtain the same findings in a form it can parse programmatically, without scraping the human-readable text output"
+      ]
+    },
+    {
+      "key": "B",
+      "title": "סיפור מחזור-חיים לקפסולה: אתחול ומיגרציה",
+      "summary": "מאמץ בינוני-גבוה, סיכון בינוני (over-engineering על בסיס מעבר יחיד עד היום) — מקטין חיכוך בהתחלה/שדרוג אך לא סוגר הבטחה קיימת.",
+      "criteria": [
+        "Given an empty project directory with no .capsa/, when the scaffolding capability runs, a valid manifest-only capsule is created that the validator immediately reports as conforming",
+        "Given a project that already has a .capsa/ directory, when the scaffolding capability runs, it refuses to overwrite existing records and reports the capsule already exists",
+        "Given a project holding a capsule in the pre-0.2.0 layout (capsule/), when the migration capability runs, all records are preserved unchanged in content and moved into .capsa/ with capsa_version updated to the current release",
+        "Given a capsule already at the current capsa_version, when the migration capability runs, it reports there is nothing to migrate and makes no changes",
+        "Given a capsule whose declared capsa_version has a MAJOR version this tooling does not know how to migrate, when the migration capability runs, it refuses and reports it cannot safely migrate",
+        "Given the scaffolding capability run with a choice of which optional record types to pre-create, the resulting capsule contains empty directories only for the chosen types",
+        "Given a capsule successfully migrated, when the validator runs against it afterward, it reports the capsule conforms"
+      ]
+    },
+    {
+      "key": "C",
+      "title": "הבהרות SPEC לדו-משמעויות שעלו מה-dogfooding",
+      "summary": "מאמץ נמוך, סיכון נמוך-בינוני (עריכת מסמך נורמטיבי) — מסיר בלבול עתידי אך לא פותר כאב פעיל היום.",
+      "criteria": [
+        "Given a record filed with a numbering gap in its directory (e.g. 0001 then 0003), when checked against the specification, the specification states plainly whether such a capsule conforms, and the validator's verdict matches it",
+        "Given a frontmatter value written with a YAML construct outside today's documented safe subset, the specification names that construct as unsupported, and a mismatch between PyYAML-present and PyYAML-absent parsing becomes a reported finding rather than a silent difference",
+        "Given the 'no unknown license at release' claim, the specification names the field tying a release to the dependencies it ships, and the validator can check that claim end-to-end",
+        "Given both a root charter.md and a plan of kind: charter, the specification states the distinct purpose of each",
+        "Given a decision's supersedes field, the specification states whether the reciprocal superseded_by on the older record is mandatory or advisory, and the validator's behavior matches whichever the specification says"
+      ]
+    }
+  ]
+}
