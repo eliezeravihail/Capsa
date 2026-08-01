@@ -161,6 +161,24 @@
       "items": {
         "$ref": "../../core/schema/link.schema.json"
       }
+    },
+    "fix_commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "line",
+          "commit"
+        ],
+        "properties": {
+          "line": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "allOf": [

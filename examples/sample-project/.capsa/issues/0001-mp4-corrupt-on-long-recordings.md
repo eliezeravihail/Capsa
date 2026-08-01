@@ -10,6 +10,9 @@ opened: 2026-07-21
 triaged: 2026-07-21
 closed: 2026-07-22
 fix_commit: "a3f9c1d2e"
+fix_commits:
+  - {line: 1-x, commit: "a3f9c1d2e"}
+  - {line: 0-9-x, commit: "77b1e04aa"}
 fix_plan_ref: null
 regression_ref: "tests/test_mux.py::test_large_file_finalize"
 reopens: 0

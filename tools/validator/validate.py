@@ -79,10 +79,10 @@ def _split_inline(inner: str) -> list[str]:
         if ch in "\"'":
             quote = ch
             cur += ch
-        elif ch == "[":
+        elif ch in "[{":
             depth += 1
             cur += ch
-        elif ch == "]":
+        elif ch in "]}":
             depth -= 1
             cur += ch
         elif ch == "," and depth == 0:
@@ -277,13 +277,98 @@ def records(dirpath: Path, pattern=NAME):
         yield f, fm
 
 
-def check_record_dirs(base: Path) -> None:
+def axis_values(root: Path) -> dict[str, set[str]]:
+    """The closed sets a `scoped_status` scope may name (SPEC §2.5).
+
+    Both axes are records rather than free strings precisely so that
+    `platform:ipda` is a typo a checker can catch instead of a value that
+    silently means nothing.
+    """
+    out = {"line": set(), "platform": set()}
+    for axis, d in (("line", "lines"), ("platform", "platforms")):
+        p = root / d
+        if p.is_dir():
+            out[axis] = {f.stem for f in p.glob("*.md")}
+    return out
+
+
+OPS = ("<=", ">=", "<", ">", "==")
+METRIC = re.compile(r"^[a-z][a-z0-9_]*$")
+SCOPE = re.compile(r"^(line|platform):([a-z0-9]+(?:-[a-z0-9]+)*)$")
+
+
+def check_scoped_status(fm, f, axes) -> None:
+    """Conformance rule 9."""
+    rows = fm.get("scoped_status")
+    if rows is None:
+        return
+    if not isinstance(rows, list):
+        err(f, "`scoped_status` must be a list", "E-SCOPE-TYPE", "scoped_status")
+        return
+    for i, row in enumerate(rows):
+        field = f"scoped_status[{i}]"
+        if not isinstance(row, dict) or "scope" not in row or "status" not in row:
+            err(f, "each scoped_status entry needs `scope` and `status`",
+                "E-SCOPE-SHAPE", field)
+            continue
+        m = SCOPE.match(str(row["scope"]))
+        if not m:
+            err(f, f"scope {row['scope']!r} must be line:<slug> or "
+                   f"platform:<slug>", "E-SCOPE-SYNTAX", f"{field}.scope",
+                str(row["scope"]))
+            continue
+        axis, slug = m.group(1), m.group(2)
+        if slug not in axes[axis]:
+            err(f, f"scope {row['scope']!r} names no record in {axis}s/",
+                "E-SCOPE-DANGLING", f"{field}.scope", str(row["scope"]))
+
+
+def check_targets(fm, f) -> None:
+    """Conformance rule 10."""
+    rows = fm.get("targets")
+    if rows is None:
+        return
+    if not isinstance(rows, list):
+        err(f, "`targets` must be a list", "E-TARGET-TYPE", "targets")
+        return
+    for i, row in enumerate(rows):
+        field = f"targets[{i}]"
+        if not isinstance(row, dict):
+            err(f, "each target must be a mapping", "E-TARGET-SHAPE", field)
+            continue
+        metric = row.get("metric")
+        if not isinstance(metric, str) or not METRIC.match(metric):
+            err(f, f"target metric {metric!r} is not a lowercase token",
+                "E-TARGET-METRIC", f"{field}.metric", str(metric))
+        if row.get("op") not in OPS:
+            err(f, f"target op {row.get('op')!r} not in {list(OPS)}",
+                "E-TARGET-OP", f"{field}.op", str(row.get("op")))
+        if not isinstance(row.get("value"), (int, float)) or \
+                isinstance(row.get("value"), bool):
+            err(f, f"target value {row.get('value')!r} is not a number",
+                "E-TARGET-VALUE", f"{field}.value", str(row.get("value")))
+
+
+def check_status_companion(fm, f, status, pairs) -> None:
+    """Conformance rule 11 — a status that implies a date/version must carry
+    it. `deprecated` with no `deprecated_in` is the shape that leaves a
+    consumer unable to plan a migration."""
+    for want, companion in pairs:
+        if status == want and not fm.get(companion):
+            err(f, f"status={want} without `{companion}`",
+                f"E-{companion.upper().replace('_', '')}-MISSING", companion)
+
+
+def check_record_dirs(base: Path, root: Path | None = None) -> None:
     """Validate every record directory under `base`.
 
     Called for the capsule root and for each component directory: a
     record owned by a component is the same record, under the same
     rules, and must not drift into a second dialect (SPEC §2.4).
     """
+
+    root = base if root is None else root
+    axes = axis_values(root)
 
     for f, fm in records(base / "requirements") if (base / "requirements").is_dir() else []:
         need(fm, f, "title", str)
@@ -297,6 +382,8 @@ def check_record_dirs(base: Path) -> None:
         if status == "met" and (not isinstance(v, dict) or v.get("status") != "verified"):
             err(f, "status=met but verification.status != verified (SPEC §4.1)",
                 "E-REQ-MET-UNVERIFIED", "status")
+        check_scoped_status(fm, f, axes)
+        check_targets(fm, f)
 
     for f, fm in records(base / "plans") if (base / "plans").is_dir() else []:
         need(fm, f, "title", str)
@@ -367,6 +454,10 @@ def check_record_dirs(base: Path) -> None:
             err(f, "`commit` must be a sha (>=7 chars)", "E-RELEASE-COMMIT", "commit")
         if not is_date(fm.get("date")):
             err(f, "`date` must be a date", "E-DATE", "date")
+        line = fm.get("line")
+        if line and line not in axes["line"]:
+            err(f, f"release line {line!r} names no record in lines/",
+                "E-LINE-DANGLING", "line", str(line))
 
     ins = base / "insights"
     if ins.is_dir():
@@ -387,10 +478,47 @@ def check_record_dirs(base: Path) -> None:
                     err(f, "kind=code requires non-empty code_globs (SPEC §4.9)",
                         "E-INSIGHT-NOGLOBS", "code_globs")
 
+    for f, fm in records(base / "interfaces") if (base / "interfaces").is_dir() else []:
+        need(fm, f, "title", str)
+        st = need(fm, f, "status", str,
+                  {"proposed", "stable", "deprecated", "removed"})
+        if not is_date(fm.get("created")):
+            err(f, "`created` must be a date", "E-DATE", "created")
+        # A removed contract must name both dates: the deprecation is what
+        # gave consumers time, and dropping it rewrites that history.
+        check_status_companion(fm, f, st, [("deprecated", "deprecated_in"),
+                                           ("removed", "removed_in")])
+        if st == "removed" and not fm.get("deprecated_in"):
+            err(f, "status=removed without `deprecated_in`",
+                "E-DEPRECATEDIN-MISSING", "deprecated_in")
+
+    for f, fm in records(base / "milestones") if (base / "milestones").is_dir() else []:
+        need(fm, f, "title", str)
+        st = need(fm, f, "status", str,
+                  {"planned", "active", "reached", "missed", "cancelled"})
+        if not is_date(fm.get("target_date")):
+            err(f, "`target_date` must be a date", "E-DATE", "target_date")
+        check_status_companion(fm, f, st, [("reached", "reached")])
+
+    for f, fm in records(base / "lines") if (base / "lines").is_dir() else []:
+        need(fm, f, "title", str)
+        st = need(fm, f, "status", str, {"active", "maintained", "eol"})
+        if not is_date(fm.get("created")):
+            err(f, "`created` must be a date", "E-DATE", "created")
+        check_status_companion(fm, f, st, [("eol", "eol_date")])
+
+    for f, fm in records(base / "platforms") if (base / "platforms").is_dir() else []:
+        need(fm, f, "title", str)
+        need(fm, f, "status", str,
+             {"supported", "best_effort", "deprecated", "unsupported"})
+        if not is_date(fm.get("created")):
+            err(f, "`created` must be a date", "E-DATE", "created")
+
 
 # The record directories a component (or the capsule root) may hold.
 RECORD_DIRS = ("requirements", "plans", "decisions", "discussions", "issues",
-               "dependencies", "releases", "insights")
+               "dependencies", "releases", "insights", "interfaces",
+               "milestones", "lines", "platforms")
 
 
 def component_dirs(base: Path):
@@ -442,7 +570,7 @@ def check_components(root: Path) -> None:
             owned_globs.setdefault(d.parent, []).extend(
                 (rec, str(g)) for g in globs)
         # Records owned by this component get exactly the root's checks.
-        check_record_dirs(d)
+        check_record_dirs(d, root)
 
     # Overlapping ownership among siblings makes "who owns this file"
     # unanswerable, which is the question the tree exists to answer.

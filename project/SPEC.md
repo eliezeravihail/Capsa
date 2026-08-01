@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.3.0** · inherits [`core/PRINCIPLES.md`](core/PRINCIPLES.md) v0.2.0
+**Version 0.4.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.3.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -64,11 +64,15 @@ tooling (like `.git/`, `.github/`). A project MUST have at most one capsule.
 │   ├── dev/              *.md (§4.9, kind=dev)
 │   ├── design/           *.md (§4.9, kind=design)
 │   └── code/             *.md (§4.9, kind=code)
-└── components/           OPTIONAL — the component tree (§2.4, §4.10)
-    └── <slug>/
-        ├── component.md  the component record
-        ├── issues/       records owned by this component
-        └── components/   nested components
+├── components/           OPTIONAL — the component tree (§2.4, §4.10)
+│   └── <slug>/
+│       ├── component.md  the component record
+│       ├── issues/       records owned by this component
+│       └── components/   nested components
+├── interfaces/           OPTIONAL — contracts others depend on (§4.11)
+├── milestones/           OPTIONAL — dated points plans aim at (§4.12)
+├── lines/                OPTIONAL — maintained release lines (§4.13)
+└── platforms/            OPTIONAL — targets the product ships to (§4.14)
 ```
 
 Only `capsule.yaml` is REQUIRED. An absent subdirectory means "none yet",
@@ -191,6 +195,50 @@ tree, plus k hops over its edges.
 Where a component owns code, `code_globs` (§4.10) anchors it to the product
 repository, so "which component owns this file" is answerable mechanically.
 
+### 2.5 Axes — release lines and platforms
+
+A project that maintains several versions at once, or ships to several
+platforms, holds facts that are not scalar. A requirement can be met in the
+current line and unmet in a maintained older one; met on Windows and unmet on
+iPad. One `status` field cannot say that, and rounding it to a single answer
+loses exactly the information a maintainer needs.
+
+An **axis** is a closed set of named values, each of which is a record:
+`lines/<slug>.md` (§4.13) and `platforms/<slug>.md` (§4.14). A record whose
+status varies along an axis carries `scoped_status`:
+
+```yaml
+status: met                            # the project-wide answer
+scoped_status:
+  - {scope: "line:25-x",     status: unmet}
+  - {scope: "platform:ipad", status: unmet}
+```
+
+- `scope` is `line:<slug>` or `platform:<slug>`, and MUST resolve to a record
+  in `lines/` or `platforms/`. Making the axis a record rather than a free
+  string is what makes "is this a real platform" a checkable question.
+- `status` takes the same values as the record's own `status` field.
+- `status` stays the project-wide answer, and is what a consumer reads when it
+  does not care about the axis. `scoped_status` states **only the
+  exceptions** — enumerating every value would duplicate the default (§1.4).
+
+### 2.6 Quantitative targets
+
+"Opens a 100-megapixel file in under two seconds" is checkable only if the
+number is a field rather than a sentence:
+
+```yaml
+targets:
+  - {metric: open_time_ms,    op: "<=", value: 2000, unit: ms}
+  - {metric: locale_coverage, op: ">=", value: 0.95}
+```
+
+- `metric` is a lowercase token naming what is measured; `op` is one of
+  `<=`, `>=`, `<`, `>`, `==`; `value` is a number; `unit` is optional.
+- `targets` states the bar. The verification block (§2.3) states the
+  measurement and points at its evidence. Keeping them separate is what lets
+  a target be raised without touching the record of what was last measured.
+
 ## 3. The manifest — `capsule.yaml`
 
 REQUIRED. Declares the capsule's version and the project's identity — the
@@ -198,7 +246,7 @@ only thing an operator's registry needs to know is that the project exists
 and where it lives; everything else is inside.
 
 ```yaml
-capsa_version: "0.3.0"        # REQUIRED — spec version this capsule conforms to
+capsa_version: "0.4.0"        # REQUIRED — spec version this capsule conforms to
 project:
   name: "Payments Gateway"    # REQUIRED — human name
   slug: payments-gateway      # REQUIRED — kebab-case identifier
@@ -231,6 +279,8 @@ each carries the verification block (§2.3).
 | `status` | ✓ | enum | `proposed` \| `accepted` \| `met` \| `unmet` \| `dropped` |
 | `opened` | ✓ | date | |
 | `verification` | ✓ | block | §2.3; `status: met` with `verification.status != verified` is non-conforming |
+| `scoped_status` | | list | per-axis exceptions to `status` (§2.5) |
+| `targets` | | list | quantitative bars this requirement sets (§2.6) |
 | `plan_refs` | | integer[] | plans that implement it |
 | `decision_refs` | | integer[] | decisions that shaped it |
 
@@ -255,7 +305,7 @@ a plan's body holds its work-breakdown. Plans complete; the project doesn't.
 | `completed` | | date\|null | |
 | `priority` | | enum\|null | `P1` \| `P2` \| `P3` |
 | `target_date` | | date\|null | roadmap signal; the roadmap itself is derived |
-| `milestone` | | string\|null | free-form milestone label |
+| `milestone` | | string\|null | DEPRECATED — link to a milestone record instead (§4.12) |
 | `requirement_refs` | | integer[] | requirements this plan serves |
 | `decision_refs` | | integer[] | decisions this plan enacts |
 
@@ -315,7 +365,8 @@ it.
 | `opened` | ✓ | date | |
 | `triaged` | | date\|null | starts the SLA clock (targets are operator policy) |
 | `closed` | | date\|null | |
-| `fix_commit` | | string\|null | |
+| `fix_commit` | | string\|null | the fix on the default line |
+| `fix_commits` | | list | per-line fixes: `{line, commit}` — a backport is not one commit (§4.13) |
 | `fix_plan_ref` | | integer\|null | |
 | `regression_ref` | | string\|null | the permanent regression test / evidence |
 | `reopens` | | integer | default 0 |
@@ -364,6 +415,7 @@ and why".
 | `version` | ✓ | string | semver or the project's scheme |
 | `date` | ✓ | date | |
 | `commit` | ✓ | string | the released commit SHA |
+| `line` | | string\|null | slug of the release line this belongs to (§4.13) |
 | `plan_refs` | | integer[] | initiatives included |
 | `issue_refs` | | integer[] | issues fixed in this release |
 | `requirement_refs` | | integer[] | requirements newly met |
@@ -428,6 +480,82 @@ warning, not an error, since a component need not be code; *sibling
 components SHOULD NOT declare overlapping `code_globs`*, because overlapping
 ownership makes "who owns this file" unanswerable.
 
+### 4.11 Interface (`interfaces/<slug>.md`, or under a component)
+
+A contract the project exposes and other people depend on — a plugin API, a
+file format, a wire protocol, a public library surface.
+
+It is its own record because its lifecycle is not the project's: it appears in
+one version, is deprecated in another, and is removed in a third, and every
+consumer needs all three dates. Recording that in prose, or inferring it from
+decisions, is how a removal surprises somebody.
+
+| field | req | type | notes |
+|---|---|---|---|
+| `title` | ✓ | string | |
+| `status` | ✓ | enum | `proposed` \| `stable` \| `deprecated` \| `removed` |
+| `created` | ✓ | date | |
+| `since` | | string\|null | version it first shipped in |
+| `deprecated_in` | | string\|null | REQUIRED when `status` is `deprecated` or `removed` |
+| `removed_in` | | string\|null | REQUIRED when `status` is `removed` |
+| `code_globs` | | string[] | where the contract is implemented |
+| `links` | | link[] | e.g. a component `exposes` it |
+
+Body: the contract, its compatibility promise, and the migration path when it
+is deprecated.
+
+Checkable claims: *no `deprecated` interface without `deprecated_in`*; *no
+`removed` interface without `removed_in`*; *no release removes an interface
+whose `removed_in` is unset*.
+
+### 4.12 Milestone (`milestones/<slug>.md`)
+
+A dated point several plans aim at. Until now `milestone` was a free string on
+a plan, so nothing could hang a date on it, two plans could spell it
+differently, and no checker could tell.
+
+| field | req | type | notes |
+|---|---|---|---|
+| `title` | ✓ | string | |
+| `status` | ✓ | enum | `planned` \| `active` \| `reached` \| `missed` \| `cancelled` |
+| `target_date` | ✓ | date | |
+| `reached` | | date\|null | REQUIRED when `status: reached` |
+| `links` | | link[] | |
+
+A plan points at one with `{rel: aims_at, to: milestones/<slug>}`. The roadmap
+stays derived (§1.4): it is computed from plans, milestones and their dates,
+never stored.
+
+### 4.13 Release line (`lines/<slug>.md`)
+
+One maintained version stream — `26-x` shipping, `25-x` receiving fixes only.
+A serious product maintains several at once, and a single monotonic list of
+releases cannot express that.
+
+| field | req | type | notes |
+|---|---|---|---|
+| `title` | ✓ | string | |
+| `status` | ✓ | enum | `active` \| `maintained` \| `eol` |
+| `created` | ✓ | date | |
+| `eol_date` | | date\|null | REQUIRED when `status: eol` |
+| `links` | | link[] | |
+
+Releases name their line with `line` (§4.7); issues record a per-line fix with
+`fix_commits` (§4.5), because a backport is a different commit on each line
+and one `fix_commit` field can only ever describe one of them.
+
+### 4.14 Platform (`platforms/<slug>.md`)
+
+A target the product ships to. A record rather than a string for the same
+reason a release line is: it closes the set, so `platform:ipad` can be checked.
+
+| field | req | type | notes |
+|---|---|---|---|
+| `title` | ✓ | string | |
+| `status` | ✓ | enum | `supported` \| `best_effort` \| `deprecated` \| `unsupported` |
+| `created` | ✓ | date | |
+| `links` | | link[] | |
+
 ## 5. Conformance
 
 A directory is a **conforming Capsa capsule** iff:
@@ -445,6 +573,15 @@ A directory is a **conforming Capsa capsule** iff:
    (`@…`) addresses are exempt — a capsule stays valid alone (§1.3).
 8. Under `components/`, every directory that holds records or nested
    components contains a `component.md` (§2.4).
+9. Every `scoped_status[].scope` is `line:<slug>` or `platform:<slug>` and
+   resolves to a record in `lines/` or `platforms/` (§2.5).
+10. Every `targets[]` entry has a lowercase `metric`, an `op` in
+    `<=` `>=` `<` `>` `==`, and a numeric `value` (§2.6).
+11. A record whose `status` demands a companion field carries it: an
+    interface `deprecated`/`removed` names `deprecated_in`/`removed_in`, a
+    milestone `reached` names `reached`, a line `eol` names `eol_date`
+    (§4.11-4.13).
+12. A release's `line`, when set, resolves to a record in `lines/` (§4.7).
 
 The reference validator (`tools/validator/`) checks 1-4 and 6-8 mechanically. It is
 optional, read-only, and stdlib-only; the spec, not the validator, is the
@@ -463,9 +600,14 @@ makes the links trustworthy enough to compute a neighbourhood from.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.3.0**, and inherits core v0.2.0.
+This document defines version **0.4.0**, and inherits core v0.3.0.
 
 Changelog:
+- **0.4.0** — interfaces (§4.11), milestones (§4.12), release lines (§4.13)
+  and platforms (§4.14) as records; `scoped_status` for facts that vary by
+  line or platform (§2.5); quantitative `targets` (§2.6); `line` on a release
+  and `fix_commits` on an issue. Additive; `milestone` as a free string on a
+  plan is deprecated but still legal.
 - **0.3.0** — identity is the path and `NNNN-` becomes optional ordering
   (§2.2); the component tree and the component record (§2.4, §4.10);
   referential-integrity conformance rules (§5.6-8). Additive: a 0.2.0

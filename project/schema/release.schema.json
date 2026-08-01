@@ -59,6 +59,12 @@
       "items": {
         "$ref": "../../core/schema/link.schema.json"
       }
+    },
+    "line": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   }
 }

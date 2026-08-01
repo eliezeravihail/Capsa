@@ -114,6 +114,60 @@
       "items": {
         "$ref": "../../core/schema/link.schema.json"
       }
+    },
+    "scoped_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scope",
+          "status"
+        ],
+        "properties": {
+          "scope": {
+            "type": "string",
+            "pattern": "^(line|platform):[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric",
+          "op",
+          "value"
+        ],
+        "properties": {
+          "metric": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "op": {
+            "enum": [
+              "<=",
+              ">=",
+              "<",
+              ">",
+              "=="
+            ]
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
     }
   },
   "allOf": [

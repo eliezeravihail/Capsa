@@ -1,6 +1,6 @@
 # Capsa core — principles & grammar (every format inherits this)
 
-**Version 0.2.0.** The **core** is the conceptual infrastructure shared by every
+**Version 0.3.0.** The **core** is the conceptual infrastructure shared by every
 capsa format. It defines *how* a capsule is shaped — **never which records
 exist** (that is each format's decision).
 
@@ -75,7 +75,7 @@ links:
 - **Core vocabulary:** `implements`, `enacts`, `constrained_by`,
   `discussed_in`, `supersedes`, `superseded_by`, `fixed_by`, `admitted_by`,
   `includes`, `fixes`, `meets`, `depends_on`, `affects`, `owns`,
-  `anchored_to`, `learned_from`, `moved_to`.
+  `anchored_to`, `learned_from`, `moved_to`, `aims_at`, `exposes`.
 - An unknown `rel` MUST be preserved and MAY be traversed by consumers.
   Private vocabulary SHOULD use an `x-` prefix.
 - **An edge is authored in ONE direction; the inverse is computed by consumers,
@@ -117,6 +117,10 @@ capsule's identity. Records live under the **format** directory beside `core/`.
 backward-compatible, MAJOR is breaking (a consumer MUST refuse a MAJOR it does
 not support). A format versions itself independently through `format_version`.
 
-Changelog: **0.2.0** — addresses (internal / external `@slug/path`, with
-resolution rules), `links`, tombstones. All additive; a capsule conforming to
-0.1.0 conforms to 0.2.0 unchanged.
+Changelog:
+- **0.3.0** — `aims_at` and `exposes` join the core vocabulary. Additive, and
+  strictly a convenience: an unknown `rel` was always legal. A vocabulary that
+  never grows is one writers stop reading.
+- **0.2.0** — addresses (internal / external `@slug/path`, with resolution
+  rules), `links`, tombstones. All additive; a capsule conforming to 0.1.0
+  conforms to 0.2.0 unchanged.

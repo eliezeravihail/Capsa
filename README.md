@@ -54,11 +54,15 @@ accepted dot-directory convention, like `.git/` or `.github/`):
 │   ├── dev/              # development insights — lessons, rationale, what failed
 │   ├── design/           # design insights — UX, product, visual-language reasoning
 │   └── code/             # code-anchored notes (carry `code_globs`)
-└── components/           # the system's own structure — nests, and owns records
-    └── <slug>/
-        ├── component.md  # what this part is, and which code it owns
-        ├── issues/       # records belonging to this component
-        └── components/   # sub-components
+├── components/           # the system's own structure — nests, and owns records
+│   └── <slug>/
+│       ├── component.md  # what this part is, and which code it owns
+│       ├── issues/       # records belonging to this component
+│       └── components/   # sub-components
+├── interfaces/           # contracts others depend on, with their own lifecycle
+├── milestones/           # dated points several plans aim at
+├── lines/                # maintained release lines (26.x shipping, 25.x fixes)
+└── platforms/            # targets the product ships to
 ```
 
 A record is identified by its **path**, so names are kebab-case and the
@@ -122,10 +126,11 @@ It checks the manifest and every record's frontmatter against
 
 ## Status
 
-`capsa_version` **0.3.0**, on core **0.2.0** — see [`VERSION`](./VERSION),
+`capsa_version` **0.4.0**, on core **0.3.0** — see [`VERSION`](./VERSION),
 [`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
-format is young; the shape is deliberately small so it can stabilize. 0.3.0
-is additive — a 0.2.0 capsule conforms unchanged.
+format is young; the shape is deliberately small so it can stabilize. Every
+version so far has been additive — a capsule conforming to an earlier one
+still conforms.
 
 ## License
 

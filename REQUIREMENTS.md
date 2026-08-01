@@ -108,6 +108,35 @@ and E1-E4 are what make one expressible.
       silently dropping `links` when inline mappings were unhandled, which
       made E6 unverifiable on exactly the machines B4 exists for
 
+## G. Scale of a long-lived product (0.4.0)
+
+Written from testing the format against a large, long-lived codebase: each
+line is a fact such a project holds that 0.3.0 could not express without
+flattening it into something false.
+
+- [x] G1. **Contracts have their own lifecycle** — a plugin API or file format
+      appears in one version, is deprecated in another and removed in a third;
+      consumers need all three dates, not a changelog to infer them from —
+      §4.11
+- [x] G2. **Parallel release lines** — a product maintains several versions at
+      once. One monotonic release list cannot say which line a release belongs
+      to, and one `fix_commit` cannot describe a backport, which is a
+      different commit on each line — §4.7, §4.13, §4.5
+- [x] G3. **Facts that vary by axis** — a requirement met on one platform and
+      unmet on another, or met on the current line and unmet on a maintained
+      one. `scoped_status` states only the exceptions; the scalar `status`
+      stays the project-wide answer, so the default is never duplicated — §2.5
+- [x] G4. **Axis values are records, not strings** — `lines/` and
+      `platforms/`, so `platform:ipda` is a typo a checker catches rather than
+      a value that silently means nothing — §4.13, §4.14
+- [x] G5. **Milestones are records** — a free string could carry no date, two
+      plans could spell it differently, and nothing could check either. The
+      roadmap stays derived — §4.12
+- [x] G6. **Quantitative targets are fields** — "under two seconds" is
+      checkable only as `{metric, op, value}`. `targets` states the bar; the
+      verification block states the measurement, so raising a bar does not
+      overwrite what was last measured — §2.6
+
 ## Decisions taken during requirement gathering (recorded, not deleted)
 
 - Discussions are a separate lightweight type, not folded into decisions —
