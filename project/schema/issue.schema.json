@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Capsa requirement",
+  "title": "Capsa issue",
   "type": "object",
   "required": [
     "title",
-    "level",
+    "kind",
     "status",
-    "opened",
-    "verification"
+    "source",
+    "opened"
   ],
   "properties": {
     "id": {
@@ -18,25 +18,84 @@
       "type": "string",
       "minLength": 1
     },
-    "level": {
+    "kind": {
       "enum": [
-        "must",
-        "should",
-        "may"
+        "bug",
+        "risk",
+        "task"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        null
       ]
     },
     "status": {
       "enum": [
-        "proposed",
-        "accepted",
-        "met",
-        "unmet",
-        "dropped"
+        "new",
+        "triaged",
+        "in_progress",
+        "awaiting_verification",
+        "closed",
+        "rejected"
+      ]
+    },
+    "source": {
+      "enum": [
+        "ceo",
+        "system",
+        "agent"
+      ]
+    },
+    "owner": {
+      "type": [
+        "string",
+        "null"
       ]
     },
     "opened": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}"
+    },
+    "triaged": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}"
+    },
+    "closed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}"
+    },
+    "fix_commit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fix_plan_ref": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "regression_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reopens": {
+      "type": "integer",
+      "minimum": 0
     },
     "verification": {
       "type": "object",
@@ -97,22 +156,10 @@
         }
       ]
     },
-    "plan_refs": {
-      "type": "array",
-      "items": {
-        "type": "integer"
-      }
-    },
-    "decision_refs": {
-      "type": "array",
-      "items": {
-        "type": "integer"
-      }
-    },
     "links": {
       "type": "array",
       "items": {
-        "$ref": "link.schema.json"
+        "$ref": "../../core/schema/link.schema.json"
       }
     }
   },
@@ -121,18 +168,29 @@
       "if": {
         "properties": {
           "status": {
-            "const": "met"
+            "const": "closed"
+          },
+          "kind": {
+            "const": "bug"
           }
-        }
+        },
+        "required": [
+          "kind"
+        ]
       },
       "then": {
+        "required": [
+          "fix_commit",
+          "regression_ref"
+        ],
         "properties": {
-          "verification": {
-            "properties": {
-              "status": {
-                "const": "verified"
-              }
-            }
+          "fix_commit": {
+            "type": "string",
+            "minLength": 7
+          },
+          "regression_ref": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

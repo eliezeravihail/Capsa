@@ -79,7 +79,7 @@
     "links": {
       "type": "array",
       "items": {
-        "$ref": "link.schema.json"
+        "$ref": "../../core/schema/link.schema.json"
       }
     }
   }

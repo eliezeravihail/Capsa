@@ -87,9 +87,9 @@ compliance in code (*"no deny-tier dependency without an admitting
 decision"*, *"no open S1 at release"*). Prose explains; fields prove.
 
 Every record is `<frontmatter> + <Markdown body>`. The frontmatter fields
-are defined per record type in [`SPEC.md`](./SPEC.md) and enforced by the
-JSON Schemas in [`schema/`](./schema/). Copy-ready starters live in
-[`templates/`](./templates/); a filled example is in
+are defined per record type in [`SPEC.md`](./project/SPEC.md) and enforced by the
+JSON Schemas in [`project/schema/`](./project/schema/). Copy-ready starters live in
+[`project/templates/`](./project/templates/); a filled example is in
 [`examples/`](./examples/).
 
 ## Using it
@@ -114,16 +114,16 @@ The format is the source of truth; validation is a convenience, never
 required. A dependency-free checker is provided:
 
 ```sh
-python3 validator/validate.py path/to/project/.capsa
+python3 tools/validator/validate.py path/to/project/.capsa
 ```
 
 It checks the manifest and every record's frontmatter against
-[`schema/`](./schema/). It only reads — it never writes or "fixes."
+[`project/schema/`](./project/schema/). It only reads — it never writes or "fixes."
 
 ## Status
 
 `capsa_version` **0.3.0**, on core **0.2.0** — see [`VERSION`](./VERSION),
-[`SPEC.md`](./SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
+[`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
 format is young; the shape is deliberately small so it can stabilize. 0.3.0
 is additive — a 0.2.0 capsule conforms unchanged.
 
