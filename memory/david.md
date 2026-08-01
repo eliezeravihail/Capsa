@@ -31,4 +31,22 @@
   in draw()): the design scoped the smells precisely and did NOT list it, so I
   moved it verbatim and filed a suggestion rather than refactoring off-contract.
   Out-of-scope cleanup is a note to the architect, not a keyboard decision.
+- 2026-08-01 · QA-1 (catch sets a status then falls through to a SHARED show()
+  whose own setStatus clobbers it): fix by a flag + re-applying the message AFTER
+  the shared call (last-writer-wins), NOT by duplicating show() into the catch —
+  that would duplicate the daily-maze construction. It was an ORDERING bug, so
+  the fix is ordering, not a copy. Kept the exotic user-facing string (— , ’) by
+  reusing its exact bytes in the Edit and byte-diffing vs HEAD after.
+- 2026-08-01 · "Zero canvas behaviour change" refactor: proved it by EXECUTION,
+  not eye. The browser harnesses only drove the TRAIL branch (a solve path);
+  #hint (the solution branch) is never clicked, so I built a canvas STATE-MACHINE
+  simulator (snapshot effective {stroke,width,cap,join,dash}+subpath at each
+  stroke/fill) and compared OLD(HEAD) vs NEW render.js over 4 view configs.
+  Calibrated first: OLD==OLD (no false positive) and NEW!=deliberately-mutated
+  (has resolution) BEFORE trusting the equal verdict. A raw ctx-call recorder
+  would false-positive on harmless state-setter reorder + a no-op setLineDash([]).
+- 2026-08-01 · Before relying on "the dash is always [] here", I grepped: setLineDash
+  lives ONLY in render.js's solution branch (export.js strokes a SEPARATE context;
+  play.js never touches ctx). That grep is what turned "adding setLineDash([]) to
+  the trail is a no-op" from a hope into a proven fact.
 
