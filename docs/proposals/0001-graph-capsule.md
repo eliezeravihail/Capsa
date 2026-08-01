@@ -1,8 +1,13 @@
 # Proposal 0001 — typed links and the component tree
 
-**Status:** draft, for review. Nothing is adopted; no file under `core/`,
-`project/`, `organization/`, `SPEC.md`, `schema/`, `validator/`,
-`templates/` or `examples/` is changed by this document.
+**Status: ADOPTED** in core v0.2.0 + project format v0.3.0. The reasoning of
+record is `.capsa/decisions/0005-graph-capsule.md`; this document is kept as
+the working draft behind it, not as a live proposal.
+
+Adopted with one change of scope: C7 (stable codes and severity on validator
+findings) landed together with the rest rather than being deferred, because
+the component checks introduced the first SHOULD-level rules and the findings
+list had no way to express a warning.
 
 **Written against:** `main` @ `f9b8f6b` — i.e. *after* the umbrella reframe
 (`core/` + format family), the organization format v0.1.0, and the

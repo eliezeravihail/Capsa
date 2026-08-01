@@ -3,7 +3,6 @@
   "title": "Capsa discussion",
   "type": "object",
   "required": [
-    "id",
     "title",
     "status",
     "opened"
@@ -33,6 +32,12 @@
         "integer",
         "null"
       ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.schema.json"
+      }
     }
   }
 }

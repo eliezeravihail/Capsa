@@ -3,7 +3,6 @@
   "title": "Capsa plan",
   "type": "object",
   "required": [
-    "id",
     "title",
     "kind",
     "status",
@@ -75,6 +74,12 @@
       "type": "array",
       "items": {
         "type": "integer"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.schema.json"
       }
     }
   }

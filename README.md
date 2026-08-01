@@ -42,19 +42,42 @@ accepted dot-directory convention, like `.git/` or `.github/`):
 .capsa/
 ├── capsule.yaml          # manifest: capsa_version, project identity, status
 ├── charter.md            # the project's upfront vision, constraints, ground rules
-├── requirements/         # NNNN-slug.md — needs, formally trackable to met/unmet with evidence
-├── plans/                # NNNN-slug.md — initiatives with work-breakdown, priority, target date
-├── decisions/            # NNNN-slug.md — architecture decisions (ADRs), append-only
-├── discussions/          # NNNN-slug.md — substantive considerations (may graduate to a decision)
-├── issues/               # NNNN-slug.md — bugs / risks / tasks, with lifecycle & severity
+├── requirements/         # needs, formally trackable to met/unmet with evidence
+├── plans/                # initiatives with work-breakdown, priority, target date
+├── decisions/            # architecture decisions (ADRs), append-only
+├── discussions/          # substantive considerations (may graduate to a decision)
+├── issues/               # bugs / risks / tasks, with lifecycle & severity
 ├── dependencies/         # <eco>-<name>.md — one record per dependency: license, tier, decision
 ├── NOTICES               # generated third-party attribution (from dependencies/)
-├── releases/             # NNNN-vX.Y.Z.md — what shipped, when, from which commit
-└── insights/
-    ├── dev/              # development insights — lessons, rationale, what failed
-    ├── design/           # design insights — UX, product, visual-language reasoning
-    └── code/             # code-anchored notes (carry `code_globs`)
+├── releases/             # what shipped, when, from which commit
+├── insights/
+│   ├── dev/              # development insights — lessons, rationale, what failed
+│   ├── design/           # design insights — UX, product, visual-language reasoning
+│   └── code/             # code-anchored notes (carry `code_globs`)
+└── components/           # the system's own structure — nests, and owns records
+    └── <slug>/
+        ├── component.md  # what this part is, and which code it owns
+        ├── issues/       # records belonging to this component
+        └── components/   # sub-components
 ```
+
+A record is identified by its **path**, so names are kebab-case and the
+`NNNN-` prefix is optional ordering — nothing has to allocate a number, and
+two authors on two branches never contend for one.
+
+Records link to each other with typed edges, which is what makes a capsule a
+graph rather than a pile of directories:
+
+```yaml
+links:
+  - {rel: implements,     to: requirements/0003-verifiable-claims}
+  - {rel: constrained_by, to: "@acme/policies/license-tiers"}   # another capsule
+```
+
+A containment tree plus typed edges is enough for a consumer to pull the
+**relevant neighbourhood** of one record — its ancestors, plus k hops over
+its edges — instead of loading the whole capsule. Computing that is the
+consumer's business; the capsule stays passive.
 
 A distinguishing property: **claims that can be checked are formal fields,
 not prose.** A requirement's `met` status, a dependency's license `tier`, a
@@ -99,9 +122,10 @@ It checks the manifest and every record's frontmatter against
 
 ## Status
 
-`capsa_version` **0.2.0** — see [`VERSION`](./VERSION) and
-[`SPEC.md`](./SPEC.md). The format is young; the shape is deliberately
-small so it can stabilize.
+`capsa_version` **0.3.0**, on core **0.2.0** — see [`VERSION`](./VERSION),
+[`SPEC.md`](./SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
+format is young; the shape is deliberately small so it can stabilize. 0.3.0
+is additive — a 0.2.0 capsule conforms unchanged.
 
 ## License
 

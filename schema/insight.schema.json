@@ -41,6 +41,12 @@
       "items": {
         "type": "string"
       }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.schema.json"
+      }
     }
   },
   "allOf": [

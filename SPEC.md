@@ -1,6 +1,6 @@
-# Capsa Specification
+# Capsa Specification — the project format
 
-**Version 0.2.0**
+**Version 0.3.0** · inherits [`core/PRINCIPLES.md`](core/PRINCIPLES.md) v0.2.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -8,6 +8,10 @@ ships, and learns. This document is normative: it defines what a conforming
 capsule looks like. It defines **no behavior** — Capsa has no runtime.
 
 The key words MUST, SHOULD, and MAY are used as in RFC 2119.
+
+This is one format in the capsa family; the shared grammar it inherits —
+addresses, `links`, tombstones, the verification block — is defined once in the
+core and is not restated here.
 
 ---
 
@@ -56,10 +60,15 @@ tooling (like `.git/`, `.github/`). A project MUST have at most one capsule.
 ├── dependencies/         OPTIONAL — <ecosystem>-<name>.md (§4.6)
 ├── NOTICES               OPTIONAL — generated third-party attribution (§4.6)
 ├── releases/             OPTIONAL — NNNN-vX.Y.Z.md (§4.7)
-└── insights/             OPTIONAL
-    ├── dev/              *.md (§4.9, kind=dev)
-    ├── design/           *.md (§4.9, kind=design)
-    └── code/             *.md (§4.9, kind=code)
+├── insights/             OPTIONAL
+│   ├── dev/              *.md (§4.9, kind=dev)
+│   ├── design/           *.md (§4.9, kind=design)
+│   └── code/             *.md (§4.9, kind=code)
+└── components/           OPTIONAL — the component tree (§2.4, §4.10)
+    └── <slug>/
+        ├── component.md  the component record
+        ├── issues/       records owned by this component
+        └── components/   nested components
 ```
 
 Only `capsule.yaml` is REQUIRED. An absent subdirectory means "none yet",
@@ -86,15 +95,36 @@ file of the form:
 - Unknown frontmatter keys are permitted and MUST be preserved by writers.
 - Dates are ISO-8601 (`YYYY-MM-DD`); timestamps are RFC-3339.
 - A `*_ref` / `*_refs` field holds the `id` of another record, or a path
-  relative to the capsule root.
+  relative to the capsule root. Any record MAY additionally carry `links`
+  (core §Links) — the general typed edge, which is what makes a link
+  expressible without a change to this spec.
 
-### 2.2 Numbering & names
+### 2.2 Identity & names
 
-Records in `requirements/`, `plans/`, `decisions/`, `discussions/`,
-`issues/`, and `releases/` are named `NNNN-slug.md`: `NNNN` is a
-zero-padded, monotonically increasing integer unique within that directory;
-`slug` is a short kebab-case label. The frontmatter `id` MUST equal `NNNN`.
-Release slugs SHOULD be the version (`0007-v2.3.0.md`).
+**A record's identity is its path** relative to the capsule root with the
+`.md` suffix removed — `requirements/0001-passive-format`,
+`components/render/issues/tiling-seam`. Paths are what `links[].to` and
+`*_ref` fields address (core §Addresses).
+
+Names in `requirements/`, `plans/`, `decisions/`, `discussions/`,
+`issues/`, and `releases/`:
+
+- A filename MUST be kebab-case (`[a-z0-9]+(-[a-z0-9]+)*.md`), OPTIONALLY
+  prefixed with `NNNN-` where `NNNN` is a zero-padded integer. Release
+  slugs SHOULD be the version (`0007-v2.3.0.md`, or `v2.3.0.md`).
+- The `NNNN-` prefix carries **ordering only**. It need not be
+  monotonically increasing and MAY be omitted entirely.
+- `id` is OPTIONAL. Where a filename carries `NNNN-` **and** `id` is
+  present, they MUST agree.
+
+*Why numbering is no longer required:* a monotonic counter in a flat
+directory assumes a single writer. Several authors on separate branches
+each claiming the next number collide by construction, and the collision is
+in the one field that identifies the record. Path identity needs no
+allocation, so two authors adding `components/render/issues/tiling-seam`
+and `components/color/issues/gamut-clip` never contend. The sibling
+organization format identifies by slug for the same reason, and two record
+types here already identify without a number (below).
 
 `dependencies/` records are named `<ecosystem>-<name>.md`
 (e.g. `pypi-fastapi.md`); their identity is the `(ecosystem, name)` pair.
@@ -121,6 +151,46 @@ verification:
 - Consumers MUST treat a missing block as `status: unverified`. Absence of
   evidence is a visible fact, never an implied pass.
 
+### 2.4 The component tree
+
+A capsule MAY describe the structure of the system itself. A **component**
+is a directory containing a `component.md` (§4.10); it MAY hold its own
+record directories and its own nested components, without depth limit:
+
+```
+.capsa/
+├── requirements/                       cross-cutting records stay at the root
+├── decisions/
+└── components/
+    ├── render/
+    │   ├── component.md
+    │   ├── issues/tiling-seam.md
+    │   ├── decisions/0003-tile-cache.md
+    │   └── components/
+    │       └── tiling/component.md
+    └── color-engine/
+        └── component.md
+```
+
+- Any record type valid at the capsule root is valid inside a component
+  directory, with identical fields and rules.
+- A record's **owning component** is the nearest ancestor directory
+  containing a `component.md`. It is DERIVED from the path and MUST NOT be
+  duplicated into a frontmatter field (§1.4 — nothing derivable is stored).
+- A record at the root has no owning component. That means **cross-cutting**,
+  never "unassigned".
+
+This is the containment axis, and it is deliberately the same shape source
+code already has: a module tree, plus a graph of links across it. Two things
+follow. The component is the natural partition key for every other record
+type — issues, requirements and decisions per subsystem rather than in one
+undifferentiated directory. And together with `links` it gives a consumer
+the two halves of a bounded neighbourhood query: a record's ancestors in the
+tree, plus k hops over its edges.
+
+Where a component owns code, `code_globs` (§4.10) anchors it to the product
+repository, so "which component owns this file" is answerable mechanically.
+
 ## 3. The manifest — `capsule.yaml`
 
 REQUIRED. Declares the capsule's version and the project's identity — the
@@ -128,7 +198,7 @@ only thing an operator's registry needs to know is that the project exists
 and where it lives; everything else is inside.
 
 ```yaml
-capsa_version: "0.2.0"        # REQUIRED — spec version this capsule conforms to
+capsa_version: "0.3.0"        # REQUIRED — spec version this capsule conforms to
 project:
   name: "Payments Gateway"    # REQUIRED — human name
   slug: payments-gateway      # REQUIRED — kebab-case identifier
@@ -331,7 +401,32 @@ issue. Three kinds — insights are not limited to code:
 | `tags` | | string[] | |
 
 Cross-project ("company-brain") insights do NOT belong in a capsule — a
-capsule holds only what is true of this project.
+capsule holds only what is true of this project. An insight that turns out
+to be organisational MOVES to the organization capsule, leaving a tombstone
+(core §Tombstones); it is never copied, because that would give one fact two
+homes (§1.4).
+
+### 4.10 Component (`components/**/component.md`)
+
+One part of the system: a module, a subsystem, a service. The record that
+answers "what is the architecture now" — decisions record *changes* to it,
+and `charter.md` holds the vision, but neither states the current structure.
+
+| field | req | type | notes |
+|---|---|---|---|
+| `title` | ✓ | string | |
+| `status` | ✓ | enum | `planned` \| `active` \| `deprecated` \| `retired` |
+| `created` | ✓ | date | |
+| `code_globs` | | string[] | paths in the product repo this component owns |
+| `links` | | link[] | core §Links; e.g. `depends_on` another component |
+| `tags` | | string[] | |
+
+Body: purpose, boundaries, the interfaces it exposes, what it must not know.
+
+Checkable claims: *an `active` component SHOULD declare `code_globs`* — a
+warning, not an error, since a component need not be code; *sibling
+components SHOULD NOT declare overlapping `code_globs`*, because overlapping
+ownership makes "who owns this file" unanswerable.
 
 ## 5. Conformance
 
@@ -340,14 +435,25 @@ A directory is a **conforming Capsa capsule** iff:
 1. `capsule.yaml` exists and satisfies §3.
 2. Every present record parses as frontmatter + body (§2.1) and satisfies
    its type's fields (§4; mirrored in `schema/`).
-3. Names and numbering follow §2.2.
+3. Names follow §2.2.
 4. Verification claims follow §2.3 (no `verified`/`met` without evidence).
 5. Writers preserve unknown files and keys (§2, §2.1) and leave the capsule
    conforming.
+6. Every `links` entry has a lowercase-token `rel` and a syntactically valid
+   `to` address (core §Addresses, §Links).
+7. Every **internal** `links[].to` resolves to an existing record. External
+   (`@…`) addresses are exempt — a capsule stays valid alone (§1.3).
+8. Under `components/`, every directory that holds records or nested
+   components contains a `component.md` (§2.4).
 
-The reference validator (`validator/`) checks 1-4 mechanically. It is
+The reference validator (`validator/`) checks 1-4 and 6-8 mechanically. It is
 optional, read-only, and stdlib-only; the spec, not the validator, is the
 source of truth.
+
+Rule 7 is the one obligation a graph kept in files carries that a database
+would carry for it: there are no foreign keys, so an edge can point at a
+record that was deleted or renamed and nothing objects. Checking it is what
+makes the links trustworthy enough to compute a neighbourhood from.
 
 ## 6. Versioning of this spec
 
@@ -357,7 +463,14 @@ source of truth.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.2.0**.
+This document defines version **0.3.0**, and inherits core v0.2.0.
 
-Changelog: 0.2.0 — the capsule directory is `.capsa/` (was `capsule/` in
-0.1.0); a 0.1.0 capsule is migrated by renaming the directory.
+Changelog:
+- **0.3.0** — identity is the path and `NNNN-` becomes optional ordering
+  (§2.2); the component tree and the component record (§2.4, §4.10);
+  referential-integrity conformance rules (§5.6-8). Additive: a 0.2.0
+  capsule conforms unchanged, since numbered names and `id` stay legal and
+  the component tree is optional. Inherits `links`, addresses and tombstones
+  from core 0.2.0.
+- **0.2.0** — the capsule directory is `.capsa/` (was `capsule/` in 0.1.0);
+  a 0.1.0 capsule is migrated by renaming the directory.

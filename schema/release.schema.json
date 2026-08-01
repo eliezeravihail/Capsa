@@ -3,7 +3,6 @@
   "title": "Capsa release",
   "type": "object",
   "required": [
-    "id",
     "version",
     "date",
     "commit"
@@ -54,6 +53,12 @@
         "string",
         "null"
       ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.schema.json"
+      }
     }
   }
 }

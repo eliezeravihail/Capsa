@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://capsa.dev/schema/link.schema.json",
+  "title": "Capsa link",
+  "description": "A typed edge between two records (core v0.2.0, section Links). Authored in one direction only; the inverse is computed by consumers, never stored.",
+  "type": "object",
+  "required": [
+    "rel",
+    "to"
+  ],
+  "properties": {
+    "rel": {
+      "description": "Core vocabulary, or an x- prefixed private token. An unknown rel must be preserved and may be traversed.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]*$"
+    },
+    "to": {
+      "description": "An address: an internal path relative to the format directory, or an external @capsule-slug/path.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^@?[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    }
+  }
+}
