@@ -31,3 +31,15 @@ Give every such value a name and a single home: an enum for a closed set, a
 configuration for a tunable, an environment variable for a deployment- or
 secret-bearing value. The test is: a maintainer must be able to change the
 value in one obvious place without reading the algorithm around it.
+
+Single source of truth is scoped by what the value *is*, not by which files it
+happens to appear in. A value intrinsic to one implementation — a class, or one
+language's port of a shared spec — has one home *per implementation*: a
+reference port legitimately keeps the same render constant in both its Python
+and its JS copy, bound honest by a parity test, and that is correct, not a
+compromise to apologise for. A value that is a single product fact — a site
+name, a domain, a brand colour decided once — has exactly one home for the
+*whole system*; the same literal copied into eight files is the violation this
+rule targets. So ask of each constant: "is this an implementation detail of one
+unit, or one fact the whole product shares?" and give it a home at that scope —
+no wider, no narrower.
