@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.7.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.5.0
+**Version 0.8.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.6.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -150,7 +150,14 @@ organization format identifies by slug for the same reason, and two record
 types here already identify without a number (below).
 
 `dependencies/` records are named `<ecosystem>-<name>.md`
-(e.g. `pypi-fastapi.md`); their identity is the `(ecosystem, name)` pair.
+(e.g. `pypi-fastapi.md`); their identity is the `(ecosystem, name)` pair,
+never the filename alone. Where `name` itself contains `/` — npm's scoped
+packages, `@playwright/test`, `@babel/core` — the filename replaces every
+`/` with `--` (`npm-@playwright--test.md`); the `name` field stays the
+real, unescaped identifier. A filename cannot hold a path separator, and
+an ecosystem is free to name things however it names them; escaping only
+the filename is what keeps identity accurate without asking a filesystem
+to do something it can't.
 
 `insights/**` records MAY use any kebab-case filename; their identity is
 the path relative to `insights/`.
@@ -701,9 +708,17 @@ from the two directions it can be lost.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.7.0**, and inherits core v0.5.0.
+This document defines version **0.8.0**, and inherits core v0.6.0.
 
 Changelog:
+- **0.8.0** — inherits core v0.6.0 (§Addresses: a **Web** address form for
+  citing a source outside any capsule). Own fix: a dependency whose `name`
+  contains `/` (npm scoped packages — `@playwright/test`, `@babel/core`)
+  now has a satisfiable filename — `/` escapes to `--` in the filename
+  only, never in `name` (§2.2). Found live: a capsule documenting a real
+  project (`examples/netron` in this repository) had exactly one such
+  dependency, and the previous rule had no answer for it at all. Additive
+  on both counts — no capsule that conformed before stops conforming.
 - **0.7.0** — an issue's `source` (§4.5) is no longer a closed
   `ceo|system|agent` enum; it's an OPTIONAL `string|null` — a name and a
   capacity (`"Jane Doe, maintainer"`), not a forced category. No

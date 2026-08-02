@@ -4,9 +4,12 @@ title: "Should the desktop build move to Electron Forge?"
 status: resolved
 opened: 2018-01-01
 decision_ref: null
+links:
+  - {rel: discussed_in, to: "https://github.com/lutzroeder/netron/pull/632"}
 ---
 
-Tracked as issue #632: a request to integrate Electron Forge, blocked on
+Tracked as issue #632 (linked above — core §Addresses, Web form): a
+request to integrate Electron Forge, blocked on
 two upstream Forge issues (`electron/forge#1041`, configuring the
 executable output directory; `electron/forge#3457`, `npm install`
 modifying `.zshrc`). Closed **not planned** — the upstream blockers were

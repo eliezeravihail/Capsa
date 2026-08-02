@@ -1,6 +1,6 @@
 # Capsa core — principles & grammar (every format inherits this)
 
-**Version 0.5.0.** The **core** is the conceptual infrastructure shared by every
+**Version 0.6.0.** The **core** is the conceptual infrastructure shared by every
 capsa format. It defines *how* a capsule is shaped — **never which records
 exist** (that is each format's decision).
 
@@ -75,6 +75,10 @@ Every reference — a `*_ref` value, a `links[].to` — is an **address**:
 - **External** — `@<capsule-slug>/<path>`, where `<capsule-slug>` is the
   identity declared in the target capsule's manifest:
   `@acme/policies/license-tiers`.
+- **Web** — `http://` or `https://`, for a source outside any capsule
+  entirely: a GitHub issue or PR, an RFC, a mailing-list thread — the
+  evidence a decision or discussion actually came from, when that evidence
+  has no capsule of its own to live in.
 
 The `@` prefix is REQUIRED on an external address so that internal and external
 are distinguishable **without knowing which capsules are attached** — a checker
@@ -82,6 +86,15 @@ reading one capsule alone must be able to tell them apart. A leading `./` or
 `../` is likewise the only marker of a relative address: anything else is
 absolute from the format directory, so the two are told apart without knowing
 where the reading started.
+
+**A Web address is never resolved, under any circumstance** — not "exempt
+like an external capsule address," categorically excluded. Checking one
+would mean the validator making a network request, which principle 1
+(passive) forbids outright; an external `@slug/path` address is at least
+conceptually a local file that may or may not be attached, but a URL never
+is. A Web address is checked only for well-formedness (does it look like a
+URL), the same shallow check `evidence_ref` already gets away with in the
+verification block.
 
 A relative address MUST NOT resolve above the format directory. After
 resolution it is an ordinary internal address and obeys the same rules.
@@ -211,6 +224,13 @@ backward-compatible, MAJOR is breaking (a consumer MUST refuse a MAJOR it does
 not support). A format versions itself independently through `format_version`.
 
 Changelog:
+- **0.6.0** — a third address form, **Web** (`http://`/`https://`), for
+  citing a source outside any capsule — a GitHub issue/PR, an RFC — as a
+  real `links[].to` value instead of falling back to prose (§Addresses).
+  Never resolved, under any circumstance: checking one would require a
+  network request, which principle 1 forbids. Found missing while citing
+  the real GitHub PR behind a real decision in a capability-test capsule
+  (`examples/netron` in this repository). Additive.
 - **0.5.0** — §Checking: the validator checks conformance, not truth, and
   `X-` is reserved for operator-defined finding codes so an operator's own
   stricter enforcement composes with the reference validator's output
