@@ -122,13 +122,14 @@ flattening it into something false.
       once. One monotonic release list cannot say which line a release belongs
       to, and one `fix_commit` cannot describe a backport, which is a
       different commit on each line — §4.7, §4.13, §4.5
-- [x] G3. **Facts that vary by axis** — a requirement met on one platform and
-      unmet on another, or met on the current line and unmet on a maintained
-      one. `scoped_status` states only the exceptions; the scalar `status`
-      stays the project-wide answer, so the default is never duplicated — §2.5
-- [x] G4. **Axis values are records, not strings** — `lines/` and
-      `platforms/`, so `platform:ipda` is a typo a checker catches rather than
-      a value that silently means nothing — §4.13, §4.14
+- [x] G3. **Facts that vary** — a requirement met in the current line and
+      unmet in a maintained one, or met everywhere except in one subsystem.
+      `scoped_status` states only the exceptions; the scalar `status` stays
+      the project-wide answer, so the default is never duplicated — §2.5
+- [x] G4. **An exception names a record, not a string** — the scope is an
+      address that must resolve, so a typo is caught rather than silently
+      meaning nothing. *Revised in 0.6.0:* it may name **any** record, not a
+      value from a closed `line:`/`platform:` vocabulary — see H7 — §2.5
 - [x] G5. **Milestones are records** — a free string could carry no date, two
       plans could spell it differently, and nothing could check either. The
       roadmap stays derived — §4.12
@@ -169,6 +170,18 @@ These are the format-side facts that close it.
       everything, and nothing measures how much any record binds or warns
       when it is too much. Left open deliberately: a meter is a reader's
       calibration concern, and no evidence yet says where the bar is
+- [x] H7. **The format names no dimensions of variation** — it has no
+      `platforms/`, and by the same argument no `languages/`,
+      `accessibility/`, `regulations/` or `tiers/`. A constraint on the code
+      is a requirement of the code; where it has code of its own it is a
+      component. A type per dimension is a list with no principled end, and
+      the choice of which dimensions get one would be arbitrary — §2.5
+- [x] H8. **"May be absent" and "may be skipped" are different questions** —
+      the layout section says only that a *writer* need not create a
+      directory. What a *reader* must open is decided by placement and by
+      H3, never by whether the format required the directory. One word was
+      answering both and left it unclear whether an agent should read a
+      section marked optional — §2
 
 ## Decisions taken during requirement gathering (recorded, not deleted)
 
@@ -186,6 +199,10 @@ These are the format-side facts that close it.
   in favour of H1/H2: placement already states scope, and the case that
   motivated the field (a constraint written after what it constrains) is
   served by filing it, with nothing beneath it edited.
+- ~~`platforms/` as a record type~~ — added in 0.4.0, removed in 0.6.0 (H7).
+  It privileged one dimension of variation over every other, and the same
+  argument would have demanded a type for language, accessibility, regulation
+  and customer tier without end.
 - ~~Stable ids, so a move breaks no link~~ — rejected. It optimises the rare
   operation at the cost of the constant one: a path is read and navigated on
   every jump and already says what a record is and whose it is, while an id

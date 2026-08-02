@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.5.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.4.0
+**Version 0.6.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.4.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -50,35 +50,54 @@ tooling (like `.git/`, `.github/`). A project MUST have at most one capsule.
 
 ```
 .capsa/
-├── capsule.yaml          REQUIRED — the manifest (§3)
-├── charter.md            OPTIONAL — vision, constraints, ground rules (§4.8)
-├── requirements/         OPTIONAL — NNNN-slug.md (§4.1)
-├── plans/                OPTIONAL — NNNN-slug.md (§4.2)
-├── decisions/            OPTIONAL — NNNN-slug.md (§4.3)
-├── discussions/          OPTIONAL — NNNN-slug.md (§4.4)
-├── issues/               OPTIONAL — NNNN-slug.md (§4.5)
-├── dependencies/         OPTIONAL — <ecosystem>-<name>.md (§4.6)
-├── NOTICES               OPTIONAL — generated third-party attribution (§4.6)
-├── releases/             OPTIONAL — NNNN-vX.Y.Z.md (§4.7)
-├── insights/             OPTIONAL
-│   ├── dev/              *.md (§4.9, kind=dev)
-│   ├── design/           *.md (§4.9, kind=design)
-│   └── code/             *.md (§4.9, kind=code)
-├── components/           OPTIONAL — the component tree (§2.4, §4.10)
+├── capsule.yaml          the manifest (§3)
+├── charter.md            vision, constraints, ground rules (§4.8)
+├── requirements/         (§4.1)
+├── plans/                (§4.2)
+├── decisions/            (§4.3)
+├── discussions/          (§4.4)
+├── issues/               (§4.5)
+├── dependencies/         <ecosystem>-<name>.md (§4.6)
+├── NOTICES               generated third-party attribution (§4.6)
+├── releases/             (§4.7)
+├── insights/             dev/ · design/ · code/ (§4.9)
+├── components/           the component tree (§2.4, §4.10)
 │   └── <slug>/
 │       ├── component.md  the component record
 │       ├── issues/       records owned by this component
 │       └── components/   nested components
-├── interfaces/           OPTIONAL — contracts others depend on (§4.11)
-├── milestones/           OPTIONAL — dated points plans aim at (§4.12)
-├── lines/                OPTIONAL — maintained release lines (§4.13)
-└── platforms/            OPTIONAL — targets the product ships to (§4.14)
+├── interfaces/           contracts others depend on (§4.11)
+├── milestones/           dated points plans aim at (§4.12)
+└── lines/                maintained release lines (§4.13)
 ```
 
-Only `capsule.yaml` is REQUIRED. An absent subdirectory means "none yet",
-never an error. A consumer MUST tolerate files it does not recognize
-(forward compatibility) and SHOULD leave them untouched. The capsule
-contains no product code; the repository around it holds the product.
+This is the list of record **types**, not a checklist. Only `capsule.yaml` is
+required to exist. Every other directory appears when the project has such a
+record and is absent otherwise, and **an absent directory means "none of
+these yet" — never an error, and never a judgment about importance.**
+
+That distinction is worth stating flatly, because one word was doing two jobs
+and they are not related:
+
+| | question | answered by |
+|---|---|---|
+| **may be absent** | must a *writer* create this directory? | no — this section |
+| **may be skipped** | should a *reader* open this record? | §2.4 placement, §2.7 normative/descriptive |
+
+A reader never decides what to read from whether the format required a
+directory. It decides from **where the record sits**: what is in force at a
+node is everything normative on the walk from that node to the root (§2.7),
+and that is not optional in any sense — a reader that skips it is reading
+wrongly. Everything else is available and is read on demand.
+
+The same rule answers "where does this belong": a record goes where it
+applies, and the root means **cross-cutting**, not "miscellaneous" and not
+"unfiled" (§2.4). There is no place in a capsule for a record whose scope is
+unclear, because the place *is* the scope.
+
+A consumer MUST tolerate files it does not recognize (forward compatibility)
+and SHOULD leave them untouched. The capsule contains no product code; the
+repository around it holds the product.
 
 ### 2.1 Record files
 
@@ -199,32 +218,48 @@ once, at creation, by the directory chosen.
 Where a component owns code, `code_globs` (§4.10) anchors it to the product
 repository, so "which component owns this file" is answerable mechanically.
 
-### 2.5 Axes — release lines and platforms
+### 2.5 Facts that are not scalar
 
-A project that maintains several versions at once, or ships to several
-platforms, holds facts that are not scalar. A requirement can be met in the
-current line and unmet in a maintained older one; met on Windows and unmet on
-iPad. One `status` field cannot say that, and rounding it to a single answer
-loses exactly the information a maintainer needs.
+A project that maintains several versions at once holds facts a single field
+cannot state. A requirement is met in the current line and unmet in a
+maintained older one; a promise holds everywhere except in one subsystem.
+Rounding that to one answer loses exactly the information a maintainer needs.
 
-An **axis** is a closed set of named values, each of which is a record:
-`lines/<slug>.md` (§4.13) and `platforms/<slug>.md` (§4.14). A record whose
-status varies along an axis carries `scoped_status`:
+A record whose status differs somewhere carries `scoped_status`, and each
+entry names **where** by addressing a record:
 
 ```yaml
-status: met                            # the project-wide answer
+status: met                                  # the project-wide answer
 scoped_status:
-  - {scope: "line:25-x",     status: unmet}
-  - {scope: "platform:ipad", status: unmet}
+  - {scope: lines/25-x,           status: unmet}
+  - {scope: components/ios,       status: unmet}
+  - {scope: requirements/0012-a11y, status: unmet}
 ```
 
-- `scope` is `line:<slug>` or `platform:<slug>`, and MUST resolve to a record
-  in `lines/` or `platforms/`. Making the axis a record rather than a free
-  string is what makes "is this a real platform" a checkable question.
+- `scope` is an internal address (core §Addresses) and MUST resolve to an
+  existing record. That is what makes "is this a real thing" a checkable
+  question rather than a free string that silently means nothing.
+- The address may name **any** record — a release line, a component, a
+  requirement. The format does not enumerate which dimensions a project is
+  allowed to vary along, because it cannot know them: a product varies by
+  version, by subsystem, by regulation, by language, by accessibility target,
+  by customer tier. Any dimension that matters is already something the
+  capsule holds a record for; if it is not, the exception has no documented
+  referent and naming it here would only look like documentation.
 - `status` takes the same values as the record's own `status` field.
 - `status` stays the project-wide answer, and is what a consumer reads when it
-  does not care about the axis. `scoped_status` states **only the
-  exceptions** — enumerating every value would duplicate the default (§1.4).
+  does not care. `scoped_status` states **only the exceptions** — enumerating
+  every value would duplicate the default (§1.4).
+
+*Why there is no `platforms/` record type.* 0.4.0 had one, and 0.6.0 removed
+it. "Runs on Windows" is a **requirement** of the code, and where Windows and
+iPad are genuinely different code they are already **components** — so the
+type was a third name for things the format could say twice already. Worse, it
+privileged one dimension of variation with no principle behind the choice:
+the same argument admits `languages/`, `accessibility/`, `regulations/`,
+`tiers/`, without end. Constraints on the code are part of the code's own
+record, and where they apply is said by placement (§2.4) or by an address
+here.
 
 ### 2.6 Quantitative targets
 
@@ -268,7 +303,7 @@ states something that exists, happened, or was learned.
 | `releases/` | descriptive | what shipped |
 | `insights/` | descriptive | what was learned; it informs, it does not bind |
 | `dependencies/` | descriptive | what is used; a licence obligation it creates is a decision |
-| `milestones/`, `lines/`, `platforms/` | descriptive | targets and axis vocabulary |
+| `milestones/`, `lines/` | descriptive | a dated point aimed at, and a version stream |
 
 Three rules complete the reading.
 
@@ -596,17 +631,12 @@ Releases name their line with `line` (§4.7); issues record a per-line fix with
 `fix_commits` (§4.5), because a backport is a different commit on each line
 and one `fix_commit` field can only ever describe one of them.
 
-### 4.14 Platform (`platforms/<slug>.md`)
+### 4.14 Platform — **removed in 0.6.0**
 
-A target the product ships to. A record rather than a string for the same
-reason a release line is: it closes the set, so `platform:ipad` can be checked.
-
-| field | req | type | notes |
-|---|---|---|---|
-| `title` | ✓ | string | |
-| `status` | ✓ | enum | `supported` \| `best_effort` \| `deprecated` \| `unsupported` |
-| `created` | ✓ | date | |
-| `links` | | link[] | |
+`platforms/<slug>.md` existed in 0.4.0 and 0.5.0. It is gone, and the number
+is retired rather than reused so that a reference to §4.14 in an older
+document still lands somewhere truthful. See §2.5 for why, and for what says
+the same thing instead.
 
 ## 5. Conformance
 
@@ -625,8 +655,8 @@ A directory is a **conforming Capsa capsule** iff:
    (`@…`) addresses are exempt — a capsule stays valid alone (§1.3).
 8. Under `components/`, every directory that holds records or nested
    components contains a `component.md` (§2.4).
-9. Every `scoped_status[].scope` is `line:<slug>` or `platform:<slug>` and
-   resolves to a record in `lines/` or `platforms/` (§2.5).
+9. Every `scoped_status[].scope` is a syntactically valid internal address
+   and resolves to an existing record (§2.5).
 10. Every `targets[]` entry has a lowercase `metric`, an `op` in
     `<=` `>=` `<` `>` `==`, and a numeric `value` (§2.6).
 11. A record whose `status` demands a companion field carries it: an
@@ -640,7 +670,7 @@ A directory is a **conforming Capsa capsule** iff:
 14. A relative address (`./…`, `../…`) resolves within the capsule; one that
     would escape the capsule root is non-conforming (core §Addresses).
 
-The reference validator (`tools/validator/`) checks 1-4 and 6-8, 13 and 14
+The reference validator (`tools/validator/`) checks 1-4, 6-9, 13 and 14
 mechanically. It is optional, read-only, and stdlib-only; the spec, not the
 validator, is the source of truth.
 
@@ -662,9 +692,16 @@ from the two directions it can be lost.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.5.0**, and inherits core v0.4.0.
+This document defines version **0.6.0**, and inherits core v0.4.0.
 
 Changelog:
+- **0.6.0** — the `platforms/` record type is **removed** (§2.5, §4.14), and
+  `scoped_status[].scope` becomes an ordinary internal address that may name
+  any record instead of `line:`/`platform:` (§2.5). Breaking for a capsule
+  that used platforms; migration is mechanical — a platform that constrains
+  shared code becomes a requirement, a platform with its own code becomes a
+  component, and each `scope: "platform:x"` becomes the address of whichever
+  it became. Release lines are unaffected (`scope: lines/25-x`).
 - **0.5.0** — placement determines applicability (§2.4), and the
   normative/descriptive classification core v0.4.0 requires a format to make
   (§2.7); conformance rules 13 (a link may not restate the tree) and 14

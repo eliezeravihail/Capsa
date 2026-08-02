@@ -277,28 +277,19 @@ def records(dirpath: Path, pattern=NAME):
         yield f, fm
 
 
-def axis_values(root: Path) -> dict[str, set[str]]:
-    """The closed sets a `scoped_status` scope may name (SPEC §2.5).
-
-    Both axes are records rather than free strings precisely so that
-    `platform:ipda` is a typo a checker can catch instead of a value that
-    silently means nothing.
-    """
-    out = {"line": set(), "platform": set()}
-    for axis, d in (("line", "lines"), ("platform", "platforms")):
-        p = root / d
-        if p.is_dir():
-            out[axis] = {f.stem for f in p.glob("*.md")}
-    return out
-
-
 OPS = ("<=", ">=", "<", ">", "==")
 METRIC = re.compile(r"^[a-z][a-z0-9_]*$")
-SCOPE = re.compile(r"^(line|platform):([a-z0-9]+(?:-[a-z0-9]+)*)$")
 
 
-def check_scoped_status(fm, f, axes) -> None:
-    """Conformance rule 9."""
+def check_scoped_status(fm, f, known: set[str], root: Path) -> None:
+    """Conformance rule 9 — a scope is an address that resolves (SPEC §2.5).
+
+    Any record may be named: a release line, a component, a requirement. The
+    format does not enumerate the dimensions a project varies along, because
+    it cannot know them. What it does insist on is that the dimension already
+    exists as a record — otherwise the exception has no documented referent
+    and the scope string only looks like documentation.
+    """
     rows = fm.get("scoped_status")
     if rows is None:
         return
@@ -311,16 +302,15 @@ def check_scoped_status(fm, f, axes) -> None:
             err(f, "each scoped_status entry needs `scope` and `status`",
                 "E-SCOPE-SHAPE", field)
             continue
-        m = SCOPE.match(str(row["scope"]))
-        if not m:
-            err(f, f"scope {row['scope']!r} must be line:<slug> or "
-                   f"platform:<slug>", "E-SCOPE-SYNTAX", f"{field}.scope",
-                str(row["scope"]))
+        scope = str(row["scope"])
+        if not ADDR.match(scope) or scope.startswith("@"):
+            err(f, f"scope {scope!r} is not a valid internal address",
+                "E-SCOPE-SYNTAX", f"{field}.scope", scope)
             continue
-        axis, slug = m.group(1), m.group(2)
-        if slug not in axes[axis]:
-            err(f, f"scope {row['scope']!r} names no record in {axis}s/",
-                "E-SCOPE-DANGLING", f"{field}.scope", str(row["scope"]))
+        target = resolve_addr(scope, f, root)
+        if target is None or target not in known:
+            err(f, f"scope {scope!r} resolves to no record",
+                "E-SCOPE-DANGLING", f"{field}.scope", scope)
 
 
 def check_targets(fm, f) -> None:
@@ -368,7 +358,9 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
     """
 
     root = base if root is None else root
-    axes = axis_values(root)
+    known = record_paths(root)
+    lines = {f.stem for f in (root / "lines").glob("*.md")} \
+        if (root / "lines").is_dir() else set()
 
     for f, fm in records(base / "requirements") if (base / "requirements").is_dir() else []:
         need(fm, f, "title", str)
@@ -382,7 +374,7 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
         if status == "met" and (not isinstance(v, dict) or v.get("status") != "verified"):
             err(f, "status=met but verification.status != verified (SPEC §4.1)",
                 "E-REQ-MET-UNVERIFIED", "status")
-        check_scoped_status(fm, f, axes)
+        check_scoped_status(fm, f, known, root)
         check_targets(fm, f)
 
     for f, fm in records(base / "plans") if (base / "plans").is_dir() else []:
@@ -455,7 +447,7 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
         if not is_date(fm.get("date")):
             err(f, "`date` must be a date", "E-DATE", "date")
         line = fm.get("line")
-        if line and line not in axes["line"]:
+        if line and line not in lines:
             err(f, f"release line {line!r} names no record in lines/",
                 "E-LINE-DANGLING", "line", str(line))
 
@@ -507,18 +499,12 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
             err(f, "`created` must be a date", "E-DATE", "created")
         check_status_companion(fm, f, st, [("eol", "eol_date")])
 
-    for f, fm in records(base / "platforms") if (base / "platforms").is_dir() else []:
-        need(fm, f, "title", str)
-        need(fm, f, "status", str,
-             {"supported", "best_effort", "deprecated", "unsupported"})
-        if not is_date(fm.get("created")):
-            err(f, "`created` must be a date", "E-DATE", "created")
 
 
 # The record directories a component (or the capsule root) may hold.
 RECORD_DIRS = ("requirements", "plans", "decisions", "discussions", "issues",
                "dependencies", "releases", "insights", "interfaces",
-               "milestones", "lines", "platforms")
+               "milestones", "lines")
 
 
 def component_dirs(base: Path):

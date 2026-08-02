@@ -126,7 +126,8 @@
         "properties": {
           "scope": {
             "type": "string",
-            "pattern": "^(line|platform):[a-z0-9]+(-[a-z0-9]+)*$"
+            "pattern": "^(@?[A-Za-z0-9][A-Za-z0-9._/-]*|\\.{1,2}/[A-Za-z0-9._/-]*)$",
+            "description": "An internal address naming the record this exception applies within — a release line, a component, a requirement. It must resolve."
           },
           "status": {
             "type": "string"

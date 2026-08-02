@@ -10,7 +10,7 @@ verification:
   evidence_ref: "tests/test_capture.py::test_pause_resume"
   checked_at: 2026-07-20
 scoped_status:
-  - {scope: "platform:macos", status: unmet}
+  - {scope: requirements/0002-run-on-macos, status: unmet}
 targets:
   - {metric: pause_resume_gap_ms, op: "<=", value: 40, unit: ms}
 plan_refs: [1]

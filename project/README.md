@@ -3,7 +3,7 @@
 The **project** capsule format: what one project needs, plans, decides,
 discusses, fixes, ships, and learns. Record types: `requirements`, `plans`,
 `decisions`, `discussions`, `issues`, `dependencies`, `releases`, `insights`,
-`components`, `interfaces`, `milestones`, `lines`, `platforms`, `charter`.
+`components`, `interfaces`, `milestones`, `lines`, `charter`.
 
 - **Normative spec:** [`SPEC.md`](./SPEC.md)
 - **Schemas:** [`schema/`](./schema/) — one per record type, mirroring the spec

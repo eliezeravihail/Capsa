@@ -61,8 +61,7 @@ accepted dot-directory convention, like `.git/` or `.github/`):
 │       └── components/   # sub-components
 ├── interfaces/           # contracts others depend on, with their own lifecycle
 ├── milestones/           # dated points several plans aim at
-├── lines/                # maintained release lines (26.x shipping, 25.x fixes)
-└── platforms/            # targets the product ships to
+└── lines/                # maintained release lines (26.x shipping, 25.x fixes)
 ```
 
 A record is identified by its **path**, so names are kebab-case and the
@@ -142,12 +141,14 @@ It checks the manifest and every record's frontmatter against
 
 ## Status
 
-`capsa_version` **0.5.0**, on core **0.4.0** — see [`VERSION`](./VERSION),
+`capsa_version` **0.6.0**, on core **0.4.0** — see [`VERSION`](./VERSION),
 [`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
-format is young; the shape is deliberately small so it can stabilize. Every
-version has been additive except one rule in 0.5.0, which forbids a link that
-restates the tree — a capsule conforms again as soon as such a link is
-deleted, and deleting it loses nothing, because the path says the same thing.
+format is young; the shape is deliberately small so it can stabilize — and
+shrinking it counts: 0.6.0 removed a record type, because "runs on Windows"
+is a requirement of the code and a platform with its own code is a component,
+so a `platforms/` type was a third name for what the format could already
+say. Two changes so far were not purely additive; both are in the changelog
+with their migration, which in each case is a deletion or a re-filing.
 
 ## License
 
