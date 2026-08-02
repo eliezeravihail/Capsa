@@ -4,7 +4,7 @@ title: "Validator checks a closed bug's regression_ref is present, not that it a
 kind: risk
 severity: S3
 status: rejected
-source: agent
+source: "Claude, AI agent — Netron capability-test session"
 owner: null
 opened: 2026-08-02
 triaged: 2026-08-02

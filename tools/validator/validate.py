@@ -405,7 +405,6 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
         status = need(fm, f, "status", str,
                       {"new", "triaged", "in_progress", "awaiting_verification",
                        "closed", "rejected"})
-        need(fm, f, "source", str, {"ceo", "system", "agent"})
         if fm.get("severity") not in (None, "S1", "S2", "S3", "S4"):
             err(f, f"severity {fm.get('severity')!r} invalid",
                 "E-FIELD-ENUM", "severity", str(fm.get("severity")))

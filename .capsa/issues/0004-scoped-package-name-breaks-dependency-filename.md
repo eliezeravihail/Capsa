@@ -4,7 +4,7 @@ title: "The <ecosystem>-<name>.md filename rule is unsatisfiable for npm scoped 
 kind: bug
 severity: S2
 status: triaged
-source: agent
+source: "Claude, AI agent — Netron capability-test session"
 owner: null
 opened: 2026-08-02
 triaged: 2026-08-02
