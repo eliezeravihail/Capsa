@@ -6,7 +6,6 @@ discusses, fixes, ships, and learns. Record types: `requirements`, `plans`,
 `components`, `interfaces`, `milestones`, `lines`, `charter`.
 
 - **Normative spec:** [`SPEC.md`](./SPEC.md)
-- **Schemas:** [`schema/`](./schema/) — one per record type, mirroring the spec
 - **Templates:** [`templates/`](./templates/) — a starting file per record type
 
 It inherits the shared grammar — placement, addresses, `links`, tombstones,

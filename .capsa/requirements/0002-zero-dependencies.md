@@ -1,15 +1,17 @@
 ---
 id: 2
-title: "Zero dependencies — stdlib-only tooling, format as the contract"
+title: "The reference validator is dependency-free"
 level: must
 status: met
-opened: 2026-07-29
+opened: 2026-08-02
 verification:
   status: verified
   method: test
-  evidence_ref: "validator/validate.py runs with no third-party imports (PyYAML optional fallback)"
-  checked_at: 2026-07-29
-plan_refs: [1]
+  evidence_ref: "tools/validator/validate.py"
+  checked_at: 2026-08-02
 ---
 
-Adopting Capsa must require installing nothing.
+`tools/validator/validate.py` runs on the standard library alone, PyYAML
+used when present and a stdlib-only mini-parser otherwise. The format is
+the contract; a checker should never be a prerequisite for reading one.
+Both parser paths are asserted to produce identical findings.

@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-29
+updated: 2026-08-02
 ---
 
 # Charter — Capsa
@@ -17,7 +17,7 @@ machines from plain files inside the project's own repository.
 - Checkable claims are formal fields with evidence references, not prose.
 
 ## Ground rules
-- Source-of-truth order: SPEC.md > schema/ > validator/ > templates/ >
-  examples/. Never patch the validator to accept what the spec forbids.
+- Source-of-truth order: `SPEC.md` > `validator/` > `templates/` >
+  `examples/`. Never patch the validator to accept what the spec forbids.
 - Any spec change bumps capsa_version (SemVer).
 - This capsule is the project's own record — Capsa is managed with Capsa.

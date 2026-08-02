@@ -2,9 +2,9 @@
 
 The **organization** capsule: a company's durable memory — its people (agents
 *and* humans), roles, teams, presets, know-how, and the projects it runs. It
-inherits the [core](../core/PRINCIPLES.md) and lives in the organization-brain
-repo (in HaMenahel: `HM_ORG_DIR`, backed up). Rationale + operating model
-(DB cache, RAG, MD-wins): see `../docs/organization-format.md`.
+inherits the [core](../core/PRINCIPLES.md) and lives in whatever repository an
+operator designates as the organization's own durable store, separate from
+any one project's capsule.
 
 ## Manifest — `core/capsule.yaml`
 ```yaml

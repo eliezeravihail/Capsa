@@ -5,7 +5,7 @@ kind: bug
 severity: S1
 status: closed
 source: ceo
-owner: david
+owner: sam
 opened: 2026-07-21
 triaged: 2026-07-21
 closed: 2026-07-22

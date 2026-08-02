@@ -113,8 +113,8 @@ file of the form:
 ```
 
 - The frontmatter MUST be valid YAML between the first two `---` fences.
-- Field names and types per record type are defined in §4 and mirrored by
-  the JSON Schemas in `project/schema/`.
+- Field names and types per record type are defined in §4, and checked by
+  `tools/validator/`.
 - Unknown frontmatter keys are permitted and MUST be preserved by writers.
 - Dates are ISO-8601 (`YYYY-MM-DD`); timestamps are RFC-3339.
 - A `*_ref` / `*_refs` field holds the `id` of another record, or a path
@@ -644,7 +644,7 @@ A directory is a **conforming Capsa capsule** iff:
 
 1. `capsule.yaml` exists and satisfies §3.
 2. Every present record parses as frontmatter + body (§2.1) and satisfies
-   its type's fields (§4; mirrored in `project/schema/`).
+   its type's fields (§4).
 3. Names follow §2.2.
 4. Verification claims follow §2.3 (no `verified`/`met` without evidence).
 5. Writers preserve unknown files and keys (§2, §2.1) and leave the capsule
