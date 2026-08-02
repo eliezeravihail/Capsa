@@ -333,7 +333,7 @@ only thing an operator's registry needs to know is that the project exists
 and where it lives; everything else is inside.
 
 ```yaml
-capsa_version: "0.4.0"        # REQUIRED — spec version this capsule conforms to
+capsa_version: "0.6.0"        # REQUIRED — spec version this capsule conforms to
 project:
   name: "Payments Gateway"    # REQUIRED — human name
   slug: payments-gateway      # REQUIRED — kebab-case identifier

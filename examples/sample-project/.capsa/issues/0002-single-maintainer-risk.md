@@ -5,7 +5,7 @@ kind: risk
 severity: S3
 status: triaged
 source: agent
-owner: moshe
+owner: alex
 opened: 2026-07-23
 triaged: 2026-07-24
 closed: null

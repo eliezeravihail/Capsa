@@ -73,7 +73,7 @@
     <div><span>2</span><span>הרשומה — היחידה שהכול בנוי ממנה</span></div>
     <div><span>3</span><span>מעץ לגרף: הכלה וקשתות</span></div>
     <div><span>4</span><span>מה מתועד בפרויקט</span></div>
-    <div><span>5</span><span>בניית הקשר לסוכן למשימה אחת</span></div>
+    <div><span>5</span><span>מיקום כהיקף: מה קשת אומרת ומה המיקום כבר אמר</span></div>
     <div><span>6</span><span>הצוות והחברה: אנשים, תפקידים ותובנות</span></div>
     <div><span>7</span><span>היחס בין תיעוד החברה לתיעוד הפרויקטים</span></div>
     <div><span>8</span><span>מה נבדק אוטומטית — ומה קפסה איננה</span></div>
@@ -122,23 +122,15 @@
       <text x="77"  y="88"  text-anchor="middle" fill="#4a5261" font-size="9">שום דבר לא רץ.</text>
       <text x="77"  y="102" text-anchor="middle" fill="#4a5261" font-size="9">קבצים בלבד, בתוך</text>
       <text x="77"  y="116" text-anchor="middle" fill="#4a5261" font-size="9">המאגר של המוצר.</text>
-      <text x="241" y="88"  text-anchor="middle" fill="#4a5261" font-size="9">רשומות מקושרות</text>
-      <text x="241" y="102" text-anchor="middle" fill="#4a5261" font-size="9">זו לזו — אפשר לשלוף</text>
-      <text x="241" y="116" text-anchor="middle" fill="#4a5261" font-size="9">שכונה, לא הכול.</text>
+      <text x="241" y="88"  text-anchor="middle" fill="#4a5261" font-size="9">מיקום קובע היקף,</text>
+      <text x="241" y="102" text-anchor="middle" fill="#4a5261" font-size="9">וקשתות מטופסות</text>
+      <text x="241" y="116" text-anchor="middle" fill="#4a5261" font-size="9">מקשרות רשומות.</text>
       <text x="405" y="88"  text-anchor="middle" fill="#4a5261" font-size="9">טענה שניתן לבדוק</text>
       <text x="405" y="102" text-anchor="middle" fill="#4a5261" font-size="9">היא שדה עם ראיה,</text>
       <text x="405" y="116" text-anchor="middle" fill="#4a5261" font-size="9">לא משפט בפרוזה.</text>
     </g>
   </svg>
   <div class="cap">שלוש התכונות שכל השאר נגזר מהן</div>
-
-  <h3>למה זה חשוב במיוחד כשסוכני-AI עובדים על הפרויקט</h3>
-  <p>
-    לסוכן יש חלון-הקשר מוגבל. אם התיעוד הוא ערימה אחת, יש שתי אפשרויות
-    גרועות: להזרים לו הכול — יקר, איטי, ומטביע את הרלוונטי ברעש — או לתת לו
-    מעט מדי, ואז הוא מנחש. קפסה בנויה כדי לאפשר אפשרות שלישית: <b>לשלוף
-    בדיוק את השכונה של מה שהוא עובד עליה</b>. פרק 5 מראה איך.
-  </p>
 
   <div class="note">
     <b>הבחנה שכדאי להחזיק לאורך המסמך:</b> קפסה מתעדת <b>אמת דורבנית</b> —
@@ -364,93 +356,80 @@
 
 <!-- ═══════════ 5 ═══════════ -->
 <section class="page">
-  <div class="kicker">פרק 5 · הלב של המסמך</div>
-  <h2>בניית הקשר לסוכן למשימה אחת</h2>
+  <div class="kicker">פרק 5</div>
+  <h2>מיקום כהיקף: מה קשת אומרת ומה המיקום כבר אמר</h2>
   <div class="rule"></div>
 
   <p class="lede">
-    זו השאלה שהפורמט נבנה כדי לענות עליה: סוכן מקבל משימה אחת — למשל
-    "תקן את התפר בריצוף" — ואנחנו רוצים לתת לו את מה שרלוונטי, ורק אותו.
+    בקפסה למיקום ברשת יש משמעות, לא רק כתובת: <b>רשומה חלה על הצומת שמחזיק
+    אותה ועל כל מה שמתחתיו</b>. רשומה בשורש חלה על הקפסולה כולה. זו עובדה על
+    הגרף, לא נוחות-ניווט.
   </p>
 
-  <svg width="492" height="300" viewBox="0 0 492 300" role="img">
+  <svg width="492" height="260" viewBox="0 0 492 260" role="img">
     <defs>
       <marker id="a2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
         <path d="M0,0 L7,3.5 L0,7 z" fill="#2563eb"/>
       </marker>
+      <marker id="a6" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 z" fill="#c2790b"/>
+      </marker>
     </defs>
-    <g font-family="DejaVu Sans" font-size="8.8">
-      <!-- SOURCE: the whole capsule, on the RIGHT (read first in RTL) -->
-      <rect x="205" y="1" width="286" height="298" rx="7" fill="#fbfcfd" stroke="#dde1e7"/>
-      <text x="348" y="20" text-anchor="middle" font-size="9.6" font-weight="bold">הקפסולה כולה</text>
-      <text x="348" y="33" text-anchor="middle" font-size="8" fill="#767d8b">אלפי רשומות</text>
-      <g fill="#e6e9ee">
-        <circle cx="242" cy="62" r="7"/><circle cx="276" cy="50" r="7"/><circle cx="456" cy="60" r="7"/>
-        <circle cx="234" cy="112" r="7"/><circle cx="452" cy="120" r="7"/><circle cx="468" cy="176" r="7"/>
-        <circle cx="244" cy="176" r="7"/><circle cx="270" cy="232" r="7"/><circle cx="324" cy="266" r="7"/>
-        <circle cx="400" cy="270" r="7"/><circle cx="442" cy="232" r="7"/><circle cx="238" cy="256" r="7"/>
-        <circle cx="354" cy="46" r="7"/><circle cx="416" cy="44" r="7"/><circle cx="302" cy="282" r="7"/>
-        <circle cx="468" cy="264" r="7"/><circle cx="222" cy="196" r="7"/><circle cx="476" cy="96" r="7"/>
-      </g>
-      <rect x="300" y="66" width="96" height="22" rx="4" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
-      <text x="348" y="81" text-anchor="middle" fill="#5b21b6">רכיב: render</text>
-      <rect x="308" y="104" width="80" height="20" rx="4" fill="#fff" stroke="#7c3aed" stroke-width="1.1" opacity=".85"/>
-      <text x="348" y="118" text-anchor="middle" fill="#5b21b6" font-size="8.2">תת-רכיב: tiling</text>
-      <circle cx="348" cy="160" r="21" fill="#2563eb"/>
-      <text x="348" y="157" text-anchor="middle" fill="#fff" font-size="8.4" font-weight="bold">המשימה</text>
-      <text x="348" y="169" text-anchor="middle" fill="#fff" font-size="7.6">תפר בריצוף</text>
-      <rect x="228" y="200" width="84" height="22" rx="4" fill="#fff" stroke="#059669" stroke-width="1.2"/>
-      <text x="270" y="215" text-anchor="middle" fill="#065f46" font-size="8.2">החלטה: מטמון</text>
-      <rect x="386" y="200" width="82" height="22" rx="4" fill="#fff" stroke="#c2790b" stroke-width="1.2"/>
-      <text x="427" y="215" text-anchor="middle" fill="#92400e" font-size="8.2">תובנה: תזמון</text>
-      <rect x="302" y="238" width="92" height="22" rx="4" fill="#fff" stroke="#2563eb" stroke-width="1.2"/>
-      <text x="348" y="253" text-anchor="middle" fill="#1e40af" font-size="8.2">דרישה: רציפות</text>
-      <g stroke="#2563eb" stroke-width="1.2" fill="none" opacity=".85">
-        <path d="M348 124 L348 139"/>
-        <path d="M348 88 L348 104"/>
-        <path d="M330 172 L300 200"/>
-        <path d="M366 172 L400 200"/>
-        <path d="M348 181 L348 238"/>
-      </g>
-      <!-- arrow RIGHT -> LEFT, the RTL reading direction -->
-      <path d="M204 150 L174 150" stroke="#2563eb" stroke-width="1.7" marker-end="url(#a2)" fill="none"/>
+    <g font-family="DejaVu Sans" font-size="9">
+      <circle cx="246" cy="26" r="20" fill="#f5f7fa" stroke="#767d8b" stroke-width="1.3"/>
+      <text x="246" y="23" text-anchor="middle" font-size="8" font-weight="bold">שורש</text>
+      <text x="246" y="34" text-anchor="middle" font-size="7">חוצה-קפסולה</text>
 
-      <!-- RESULT: the package, on the LEFT -->
-      <rect x="2" y="40" width="164" height="220" rx="7" fill="#eff5ff" stroke="#2563eb" stroke-width="1.2"/>
-      <text x="84" y="60" text-anchor="middle" font-size="9.6" font-weight="bold" fill="#1e40af">חבילת ההקשר</text>
-      <text x="84" y="73" text-anchor="middle" font-size="8" fill="#4a5261">מה שנשלח לסוכן</text>
-      <g font-size="8.4" fill="#39404d">
-        <text x="150" y="96">▸ המשימה עצמה</text>
-        <text x="150" y="116">▸ הרכיב שהיא בתוכו,</text>
-        <text x="140" y="130">והרכיב שמעליו</text>
-        <text x="150" y="150">▸ הדרישה שהיא משרתת</text>
-        <text x="150" y="170">▸ ההחלטה שמגבילה אותה</text>
-        <text x="150" y="190">▸ התובנה המעוגנת בקוד</text>
-        <text x="150" y="210">▸ מה כבר נוסה ונדחה</text>
+      <rect x="196" y="92" width="100" height="34" rx="5" fill="#fff" stroke="#2563eb" stroke-width="1.3"/>
+      <text x="246" y="107" text-anchor="middle" font-weight="bold" font-size="9">רכיב: render</text>
+      <text x="246" y="119" text-anchor="middle" font-size="7.6" fill="#4a5261">החלטה: מטמון</text>
+
+      <rect x="196" y="168" width="100" height="34" rx="5" fill="#fff" stroke="#2563eb" stroke-width="1.1" opacity=".9"/>
+      <text x="246" y="183" text-anchor="middle" font-weight="bold" font-size="8.6">תת-רכיב: tiling</text>
+      <text x="246" y="195" text-anchor="middle" font-size="7.6" fill="#4a5261">תקלה: תפר</text>
+
+      <rect x="26" y="168" width="100" height="34" rx="5" fill="#fff" stroke="#767d8b" stroke-width="1.1"/>
+      <text x="76" y="183" text-anchor="middle" font-weight="bold" font-size="8.6">רכיב: color</text>
+      <text x="76" y="195" text-anchor="middle" font-size="7.6" fill="#4a5261">(אח — לא בהיקף)</text>
+
+      <rect x="356" y="92" width="112" height="34" rx="5" fill="#fff" stroke="#c2790b" stroke-width="1.3"/>
+      <text x="412" y="107" text-anchor="middle" font-weight="bold" font-size="8.6">ממשק: פורמט-קובץ</text>
+      <text x="412" y="119" text-anchor="middle" font-size="7.6" fill="#4a5261">(בשורש — לא אב)</text>
+
+      <g stroke="#2563eb" stroke-width="1.2" fill="none">
+        <path d="M246 126 L246 168"/>
+        <path d="M246 92 L246 46"/>
       </g>
-      <line x1="18" y1="222" x2="150" y2="222" stroke="#c7d7f5"/>
-      <text x="84" y="240" text-anchor="middle" font-size="8.2" fill="#1e40af">חלק קטן מהקפסולה —</text>
-      <text x="84" y="252" text-anchor="middle" font-size="8.2" fill="#1e40af">והחלק שמשנה את התוצאה</text>
+      <g stroke="#c2790b" stroke-width="1.2" fill="none" stroke-dasharray="3 2" marker-end="url(#a6)">
+        <path d="M296 190 C 340 170, 370 140, 380 126"/>
+      </g>
+      <text x="332" y="164" text-anchor="middle" font-size="7.4" fill="#92400e">links: affects</text>
+
+      <text x="246" y="230" text-anchor="middle" font-size="8" fill="#065f46" font-weight="bold">▲ מיקום — חובה יורדת מלמעלה למטה</text>
+      <text x="356" y="150" text-anchor="middle" font-size="8" fill="#92400e" font-weight="bold">◆ קשת — מצביע, לא הכלה</text>
     </g>
   </svg>
-  <div class="cap">מהזרע החוצה: אבות בעץ + צעדים על קשתות ← חבילת הקשר סגורה</div>
+  <div class="cap">tiling יורש את מה שחל על render ועל השורש; הקשת ל"ממשק" אינה הכלה — היא מצביעה</div>
 
-  <h3>איך זה נקבע — בשלושה כללים</h3>
+  <h3>שתי עובדות על הגרף, לא שתיים ועוד</h3>
   <ul>
-    <li><b>האבות בעץ.</b> המשימה יושבת ברכיב; הרכיב יושב ברכיב-על. אלה
-      ההקשר שבתוכו היא חיה, והם נכנסים תמיד.</li>
-    <li><b>k צעדים על קשתות, מסוננים לפי סוג.</b> "מה שמגביל אותי", "מה
-      שאני משרת", "מה שמעוגן בקוד שלי" — נכנסים. "מי עוד תלוי בי" יכול
-      להישאר בחוץ אם אינו רלוונטי למשימה.</li>
-    <li><b>תקציב.</b> אם החבילה גדולה מדי, חותכים לפי מרחק — לא באקראי.</li>
+    <li><b>הכלה = היקף.</b> "החלטה: מטמון" יושבת ברכיב <span class="mono">render</span>,
+      ולכן חלה עליו ועל <span class="mono">tiling</span> שבתוכו. אין שדה
+      שאומר את זה — הנתיב עצמו הוא ההצהרה. לכל סוג-רשומה מוגדר אם הוא
+      <b>מחייב</b> את מה שמתחתיו (דרישה, החלטה, ממשק) או <b>מתאר</b> בלבד
+      (תקלה, תובנה, שחרור).</li>
+    <li><b>קשת = מה שההכלה לא יכולה לומר.</b> "ממשק: פורמט-קובץ" יושב
+      בשורש, לא אב של <span class="mono">tiling</span> — אז הקשר בין
+      <span class="mono">tiling</span> אליו הוא קשת מפורשת, לא ירושה. קשת
+      שרק חוזרת על מה שההכלה כבר אמרה — פסולה.</li>
   </ul>
 
   <div class="note">
-    <b>למה זה חייב להיות מבני ולא "חיפוש חכם":</b> חיפוש-דמיון סמנטי מדרג
-    לפי דמיון ניסוח. החלטה שמגבילה את המשימה עשויה להיות מנוסחת בלי אף מילה
-    משותפת איתה — והיא בדיוק מה שאסור לפספס. לכן <b>המבנה בוחר</b> מה נכנס
-    (שלמות מובטחת), ודמיון סמנטי לכל היותר <b>מדרג</b> בתוך מה שכבר נבחר.
-    חבילה שהשמיטה בשקט החלטה מגבילה שגויה באופן שציון-דמיון לא יכול לזהות.
+    <b>כתובות: מוחלטות ויחסיות.</b> קישור בתוך אותה תת-עץ נכתב יחסית
+    (<span class="mono">../capture/component</span>) כדי שתת-עץ שנגרר עם
+    כל תוכנו ימשיך לעבוד בלי עריכה. קישור חוצה-ענפים נכתב מוחלט מהשורש.
+    קישור חוצה-קפסולה נכתב <span class="mono">@capsule-slug/path</span> —
+    ומותר לו לא להיפתר, כי קפסולה נשארת שלמה גם לבדה.
   </div>
 </section>
 
