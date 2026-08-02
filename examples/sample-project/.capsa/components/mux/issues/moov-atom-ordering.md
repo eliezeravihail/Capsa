@@ -4,7 +4,7 @@ kind: risk
 severity: S3
 status: triaged
 source: agent
-owner: david
+owner: sam
 opened: 2026-07-23
 triaged: 2026-07-23
 links:

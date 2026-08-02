@@ -1,17 +1,18 @@
 ---
 id: 3
-title: "Checkable claims are formal fields with evidence references"
+title: "A claim subject to compliance checking is a field, not prose"
 level: must
 status: met
-opened: 2026-07-29
+opened: 2026-08-02
 verification:
   status: verified
-  method: test
-  evidence_ref: "validator calibration: induced 'met without verified evidence' fails; conforming example passes"
-  checked_at: 2026-07-29
-plan_refs: [1]
-decision_refs: [1]
+  method: manual
+  evidence_ref: "core/PRINCIPLES.md#Grammar"
+  checked_at: 2026-08-02
 ---
 
-Requirement satisfaction, license tiers, bug-closure evidence, and release
-contents must be machine-checkable (SPEC §2.3).
+A license tier, a requirement's satisfaction, an issue's closure evidence,
+a release's contents — each is a structured frontmatter field with an
+evidence reference. `status: verified` without `evidence_ref` is
+non-conforming (SPEC §2.3); a missing verification block reads as
+`unverified`, never as an implied pass.

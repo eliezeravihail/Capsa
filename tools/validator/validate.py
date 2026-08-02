@@ -15,18 +15,18 @@ Exit 0 = conforming (warnings may still be present), 1 = at least one error,
 `--json` prints
 `{"conforming": bool, "findings": [{"code", "severity", "path", "field",
 "detail", "message"}, ...]}` to stdout instead of the human text — the exact
-same findings, not a separately-derived summary
-(decisions/0004-single-findings-source.md).
+same findings, not a separately-derived summary.
 
 `code` is the stable identifier: a program decides what to do from it, never
 from `message`, which is free text and may be reworded at any time. Codes are
 `E-*` (error — non-conforming) or `W-*` (warning — the spec says SHOULD, so
 the capsule still conforms).
 
-The spec is the source of truth; this checker mirrors schema/ for the
-subset of YAML that capsule frontmatter actually uses (flat scalar keys,
-inline lists, one-level nested blocks like `verification:`). PyYAML is
-used when available; otherwise a built-in mini-parser covers that subset.
+The spec is the source of truth; this checker implements it directly rather
+than through an intermediate schema, for the subset of YAML that capsule
+frontmatter actually uses (flat scalar keys, inline lists, one-level nested
+blocks like `verification:`). PyYAML is used when available; otherwise a
+built-in mini-parser covers that subset.
 """
 from __future__ import annotations
 
@@ -105,10 +105,10 @@ def mini_yaml(text: str) -> dict:
     list — so the placeholder is created as a mapping and converted on the
     first `- ` item.
 
-    Dependency-freedom is requirement B4, so this path is not a fallback in
-    the "degraded" sense: it is the one that must be right when PyYAML is
-    absent. It was silently dropping `links` before inline mappings were
-    handled here, which made link integrity unverifiable on exactly the
+    Dependency-freedom is a core requirement (§1.1), so this path is not a
+    fallback in the "degraded" sense: it is the one that must be right when
+    PyYAML is absent. It was silently dropping `links` before inline mappings
+    were handled here, which made link integrity unverifiable on exactly the
     machines the guarantee is for.
     """
     out: dict = {}
