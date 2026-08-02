@@ -137,6 +137,39 @@ flattening it into something false.
       verification block states the measurement, so raising a bar does not
       overwrite what was last measured — §2.6
 
+## H. Placement carries meaning (0.5.0)
+
+E7 said selective retrieval is *possible in principle*, via the tree plus
+edges. Testing that against a reader holding one node exposed the gap: a
+traversal is conditional — on depth, on filtering, on budget — so an
+obligation reachable only by traversing can be missed by a correct reader.
+These are the format-side facts that close it.
+
+- [x] H1. **Placement is scope** — a record applies to the node holding it
+      and everything beneath; a root record applies capsule-wide. So what
+      governs a node is derived by walking to the root, needing no traversal
+      and no guarantee about one — core §Placement, §2.4
+- [x] H2. **Scope is never declared** — no `applies_to`, no glob, no field.
+      Filing the record states it, in the single place B-single-home allows;
+      a scope field would be a second authority on the same question, free to
+      disagree with the path — decisions/0007
+- [x] H3. **A format says which types bind** — the walk is meaningless until
+      normative and descriptive are written down, with a test that needs no
+      judgment: would removing this record permit something beneath it that
+      is not permitted now? — §2.7
+- [x] H4. **Relative addresses** — `./…`, `../…` resolved against the
+      record's own directory. Absolute addresses break when a subtree moves
+      even though both endpoints moved together and nothing changed; with
+      relative ones, moving a subtree is a directory drag — core §Addresses
+- [x] H5. **A link may not restate the tree** — an edge to an ancestor of the
+      record carrying it is refused. Same rule as E4's derived owner, applied
+      to edges; it is what keeps the edge set small enough to stay true, and
+      it caught a real anti-pattern in this repository's own example — §5.13
+- [ ] H6. **Overreach has no meter** — a root-level normative record binds
+      everything, and nothing measures how much any record binds or warns
+      when it is too much. Left open deliberately: a meter is a reader's
+      calibration concern, and no evidence yet says where the bar is
+
 ## Decisions taken during requirement gathering (recorded, not deleted)
 
 - Discussions are a separate lightweight type, not folded into decisions —
@@ -149,3 +182,12 @@ flattening it into something false.
 - ~~Ship a hooks layer for solo self-maintenance~~ — rejected: we will not
   maintain a mechanism we do not use. The format is open for others to
   build one on top.
+- ~~`applies_to` — a scope declaration on a constraining record~~ — rejected
+  in favour of H1/H2: placement already states scope, and the case that
+  motivated the field (a constraint written after what it constrains) is
+  served by filing it, with nothing beneath it edited.
+- ~~Stable ids, so a move breaks no link~~ — rejected. It optimises the rare
+  operation at the cost of the constant one: a path is read and navigated on
+  every jump and already says what a record is and whose it is, while an id
+  requires a lookup first and says nothing. A move breaks loudly, the
+  validator catches it, and H4 shrinks the blast radius.

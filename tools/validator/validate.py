@@ -585,7 +585,51 @@ def check_components(root: Path) -> None:
 
 
 REL = re.compile(r"^[a-z][a-z0-9_-]*$")
-ADDR = re.compile(r"^@?[A-Za-z0-9][A-Za-z0-9._/-]*$")
+# `@…` external, `./…` and `../…` relative, anything else absolute from the
+# capsule root — the prefix alone tells them apart (core §Addresses).
+ADDR = re.compile(r"^(@?[A-Za-z0-9][A-Za-z0-9._/-]*|\.{1,2}/[A-Za-z0-9._/-]*)$")
+
+
+def resolve_addr(to: str, src: Path, root: Path) -> str | None:
+    """An internal address as a capsule-root-relative identity, or None if it
+    escapes the capsule (core §Addresses; conformance rule 14).
+
+    A relative address resolves against the directory holding the record that
+    carries it — that is what lets a subtree be moved without editing the
+    links inside it.
+    """
+    to = to.removesuffix(".md")
+    if not to.startswith(("./", "../")):
+        return to
+    parts: list[str] = list(src.parent.relative_to(root).parts)
+    for seg in to.split("/"):
+        if seg in ("", "."):
+            continue
+        if seg == "..":
+            if not parts:
+                return None                   # above the capsule root
+            parts.pop()
+        else:
+            parts.append(seg)
+    return "/".join(parts)
+
+
+def tree_derivable(src: Path, root: Path) -> set[str]:
+    """The component addresses this record's own path already states.
+
+    Every ancestor directory of the record that is a component — including the
+    one holding it — is an ancestor in the containment tree, so an edge naming
+    it carries no information the path does not (core §Links; rule 13).
+    """
+    out = set()
+    d = src.parent
+    while True:
+        if (d / "component.md").is_file():
+            out.add((d / "component").relative_to(root).as_posix())
+        if d == root:
+            break
+        d = d.parent
+    return out
 
 
 def record_paths(root: Path) -> set[str]:
@@ -598,7 +642,7 @@ def record_paths(root: Path) -> set[str]:
 
 
 def check_links(root: Path) -> None:
-    """`links` integrity — SPEC §5.6-7, core §Addresses / §Links.
+    """`links` integrity — SPEC §5.6-7 and §5.13-14, core §Addresses / §Links.
 
     Internal targets must resolve; external (`@capsule/path`) ones must not
     be resolved here at all. A capsule is self-contained (SPEC §1.3), so it
@@ -614,6 +658,7 @@ def check_links(root: Path) -> None:
         links = fm.get("links")
         if links is None:
             continue
+        derivable = tree_derivable(f, root)
         if not isinstance(links, list):
             err(f, "`links` must be a list", "E-LINK-TYPE", "links")
             continue
@@ -633,9 +678,21 @@ def check_links(root: Path) -> None:
                 continue
             if to.startswith("@"):
                 continue                      # external — deliberately unchecked
-            if to.removesuffix(".md") not in known:
+            target = resolve_addr(to, f, root)
+            if target is None:
+                err(f, f"relative link target {to!r} resolves above the "
+                       f"capsule root (SPEC §5.14)",
+                    "E-LINK-ESCAPE", f"{field}.to", to)
+                continue
+            if target not in known:
                 err(f, f"internal link target {to!r} does not resolve",
                     "E-LINK-DANGLING", f"{field}.to", to)
+                continue
+            if target in derivable:
+                err(f, f"link target {to!r} is an ancestor of this record in "
+                       f"the component tree — the path already says it "
+                       f"(SPEC §5.13)",
+                    "E-LINK-DERIVABLE", f"{field}.to", to)
 
 
 def validate(root: Path, *, fmt: str = "text") -> int:

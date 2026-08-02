@@ -69,14 +69,30 @@ A record is identified by its **path**, so names are kebab-case and the
 `NNNN-` prefix is optional ordering — nothing has to allocate a number, and
 two authors on two branches never contend for one.
 
-Records link to each other with typed edges, which is what makes a capsule a
-graph rather than a pile of directories:
+**Where a record sits is what it applies to.** A requirement or a decision
+filed under `components/render/` is in force for `render` and everything
+inside it; one at the root is in force project-wide. So what governs a given
+part of the system is found by walking from it up to the root — no record
+declares a scope, nothing has to be kept in sync, and moving a directory
+moves what governs it, which is exactly what re-parenting a component means.
+The spec says which record types bind their subtree this way and which merely
+describe.
+
+Records also link to each other with typed edges, for the facts the tree
+cannot hold — a dependency between siblings, a pointer across branches, a
+reference into another capsule:
 
 ```yaml
 links:
   - {rel: implements,     to: requirements/0003-verifiable-claims}
+  - {rel: depends_on,     to: ../capture/component}             # relative: same subtree
   - {rel: constrained_by, to: "@acme/policies/license-tiers"}   # another capsule
 ```
+
+An edge that only restates the tree is rejected, for the same reason a
+component never stores its own owner: the path already says it. And a
+reference inside one subtree is written relative, so the subtree can be moved
+by dragging the directory, with nothing to edit.
 
 A containment tree plus typed edges is enough for a consumer to pull the
 **relevant neighbourhood** of one record — its ancestors, plus k hops over
@@ -126,11 +142,12 @@ It checks the manifest and every record's frontmatter against
 
 ## Status
 
-`capsa_version` **0.4.0**, on core **0.3.0** — see [`VERSION`](./VERSION),
+`capsa_version` **0.5.0**, on core **0.4.0** — see [`VERSION`](./VERSION),
 [`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
 format is young; the shape is deliberately small so it can stabilize. Every
-version so far has been additive — a capsule conforming to an earlier one
-still conforms.
+version has been additive except one rule in 0.5.0, which forbids a link that
+restates the tree — a capsule conforms again as soon as such a link is
+deleted, and deleting it loses nothing, because the path says the same thing.
 
 ## License
 

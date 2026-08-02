@@ -9,9 +9,12 @@ discusses, fixes, ships, and learns. Record types: `requirements`, `plans`,
 - **Schemas:** [`schema/`](./schema/) — one per record type, mirroring the spec
 - **Templates:** [`templates/`](./templates/) — a starting file per record type
 
-It inherits the shared grammar — addresses, `links`, tombstones, the
-verification block — from [`../core/PRINCIPLES.md`](../core/PRINCIPLES.md),
+It inherits the shared grammar — placement, addresses, `links`, tombstones,
+the verification block — from [`../core/PRINCIPLES.md`](../core/PRINCIPLES.md),
 which every capsa format inherits and which defines no record types of its own.
+Core requires each format to say which of its record types are **normative**
+(bind their subtree) and which are **descriptive**; this format's answer is
+[`SPEC.md` §2.7](./SPEC.md).
 
 A capsule of this format is installed as `.capsa/` at the root of the product
 repository. Validate one with

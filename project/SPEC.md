@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.4.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.3.0
+**Version 0.5.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.4.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -183,14 +183,18 @@ record directories and its own nested components, without depth limit:
   duplicated into a frontmatter field (§1.4 — nothing derivable is stored).
 - A record at the root has no owning component. That means **cross-cutting**,
   never "unassigned".
+- **Where a record sits is what it applies to** (core §Placement): a record
+  under `components/render/` applies to `render` and everything nested inside
+  it; a record at the root applies project-wide. §2.7 says which record types
+  carry an obligation down that subtree and which do not.
 
 This is the containment axis, and it is deliberately the same shape source
 code already has: a module tree, plus a graph of links across it. Two things
 follow. The component is the natural partition key for every other record
 type — issues, requirements and decisions per subsystem rather than in one
-undifferentiated directory. And together with `links` it gives a consumer
-the two halves of a bounded neighbourhood query: a record's ancestors in the
-tree, plus k hops over its edges.
+undifferentiated directory. And filing a record correctly is what states its
+scope, so scope needs no field, no glob, and no maintenance: it is asserted
+once, at creation, by the directory chosen.
 
 Where a component owns code, `code_globs` (§4.10) anchors it to the product
 repository, so "which component owns this file" is answerable mechanically.
@@ -238,6 +242,54 @@ targets:
 - `targets` states the bar. The verification block (§2.3) states the
   measurement and points at its evidence. Keeping them separate is what lets
   a target be raised without touching the record of what was last measured.
+
+### 2.7 Normative and descriptive records
+
+Core §Placement requires every format to say which of its record types bind
+their subtree. The test is one question:
+
+> **If this record were removed, would work anywhere beneath it become
+> permissible that is not permissible now?**
+> Yes → **normative**. No → **descriptive**.
+
+A normative record states an obligation or a constraint. A descriptive record
+states something that exists, happened, or was learned.
+
+| Type | | Why |
+|---|---|---|
+| `requirements/` | **normative** | states what must hold |
+| `decisions/` | **normative** | a choice made *and* the constraint it imposes from then on |
+| `interfaces/` | **normative** | a published contract binds whoever implements or calls it |
+| `charter.md` | **normative** | the capsule-wide frame; root-only by construction |
+| `components/**/component.md` | **normative** | describes the node, and its `code_globs` bound what belongs to it |
+| `issues/` | descriptive | a defect that exists; fixing it is a requirement's job, not the issue's |
+| `plans/` | descriptive | intent, not obligation — a plan that constrains should say so as a requirement or a decision |
+| `discussions/` | descriptive | the reasoning; the outcome is a decision |
+| `releases/` | descriptive | what shipped |
+| `insights/` | descriptive | what was learned; it informs, it does not bind |
+| `dependencies/` | descriptive | what is used; a licence obligation it creates is a decision |
+| `milestones/`, `lines/`, `platforms/` | descriptive | targets and axis vocabulary |
+
+Three rules complete the reading.
+
+- **Status gates the obligation.** A normative record with `status:`
+  `superseded`, `rejected`, `withdrawn`, `retired`, or `removed` no longer
+  binds. It stays in place — the history of what once bound this subtree is
+  worth as much as the current answer — but it is not collected as an
+  obligation in force.
+- **`scoped_status` narrows, it does not relocate.** A normative record with
+  `scoped_status` (§2.5) still applies to the same subtree; the axis says
+  where within it the answer differs.
+- **A record binds where it sits, not where it was written.** A decision taken
+  today that constrains a component authored a year ago is filed in that
+  component's `decisions/`, and is thereby in force for it — the old records
+  beneath it need no edit. This is why no `applies_to`-style scope field
+  exists: the one operation it would enable is already available, as filing.
+
+The classification is deliberately coarse. A reader that wants only what
+binds a node has a rule it can apply without judgment; a reader that wants
+the fuller picture reads the descriptive records too, and both are looking
+at the same files.
 
 ## 3. The manifest — `capsule.yaml`
 
@@ -582,15 +634,25 @@ A directory is a **conforming Capsa capsule** iff:
     milestone `reached` names `reached`, a line `eol` names `eol_date`
     (§4.11-4.13).
 12. A release's `line`, when set, resolves to a record in `lines/` (§4.7).
+13. No `links` entry restates the tree: `to` MUST NOT address a component
+    that is an ancestor of — or is — the record's own owning component
+    (core §Links, §2.4).
+14. A relative address (`./…`, `../…`) resolves within the capsule; one that
+    would escape the capsule root is non-conforming (core §Addresses).
 
-The reference validator (`tools/validator/`) checks 1-4 and 6-8 mechanically. It is
-optional, read-only, and stdlib-only; the spec, not the validator, is the
-source of truth.
+The reference validator (`tools/validator/`) checks 1-4 and 6-8, 13 and 14
+mechanically. It is optional, read-only, and stdlib-only; the spec, not the
+validator, is the source of truth.
 
 Rule 7 is the one obligation a graph kept in files carries that a database
 would carry for it: there are no foreign keys, so an edge can point at a
 record that was deleted or renamed and nothing objects. Checking it is what
 makes the links trustworthy enough to compute a neighbourhood from.
+
+Rule 13 is rule 7's opposite number. Rule 7 catches an edge pointing at
+nothing; rule 13 catches an edge pointing at something the path already
+said. Both defend the same property — that a link is worth traversing —
+from the two directions it can be lost.
 
 ## 6. Versioning of this spec
 
@@ -600,9 +662,17 @@ makes the links trustworthy enough to compute a neighbourhood from.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.4.0**, and inherits core v0.3.0.
+This document defines version **0.5.0**, and inherits core v0.4.0.
 
 Changelog:
+- **0.5.0** — placement determines applicability (§2.4), and the
+  normative/descriptive classification core v0.4.0 requires a format to make
+  (§2.7); conformance rules 13 (a link may not restate the tree) and 14
+  (relative addresses stay inside the capsule). §2.7 adds no field and no
+  record type — it writes down what the existing types already meant, so a
+  0.4.0 capsule's records are unchanged. Rule 13 is a restriction: a capsule
+  carrying an ancestor link conforms again once that link is deleted, and
+  deleting it loses nothing, since the path states the same fact.
 - **0.4.0** — interfaces (§4.11), milestones (§4.12), release lines (§4.13)
   and platforms (§4.14) as records; `scoped_status` for facts that vary by
   line or platform (§2.5); quantitative `targets` (§2.6); `line` on a release

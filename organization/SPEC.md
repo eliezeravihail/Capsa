@@ -1,4 +1,4 @@
-# Capsa — organization format (v0.1.0)
+# Capsa — organization format (v0.2.0)
 
 The **organization** capsule: a company's durable memory — its people (agents
 *and* humans), roles, teams, presets, know-how, and the projects it runs. It
@@ -8,9 +8,9 @@ repo (in HaMenahel: `HM_ORG_DIR`, backed up). Rationale + operating model
 
 ## Manifest — `core/capsule.yaml`
 ```yaml
-capsa_core: "0.1.0"
+capsa_core: "0.4.0"
 format: organization
-format_version: "0.1.0"
+format_version: "0.2.0"
 organization: { name, slug, created }
 status: planning|active|maintained|paused|archived
 ```
@@ -40,7 +40,45 @@ status: planning|active|maintained|paused|archived
 ## Optional
 `charter.md` (mission / values / ground rules) · `policies/` (company rules).
 
+## Placement — normative and descriptive
+
+Core §Placement requires each format to say which of its record types bind
+their subtree. The test is the same one the project format uses: would
+removing this record permit something beneath it that is not permitted now?
+
+| Type | | Why |
+|---|---|---|
+| `policies/` | **normative** | a company rule; it is the obligation |
+| `charter.md` | **normative** | the frame everything sits inside |
+| `roles/` | **normative** | responsibilities and permissions bind whoever fills the role |
+| `onboarding/` | **normative** | what a member is required to have read |
+| `members/`, `teams/`, `presets/` | descriptive | who exists, and how they are grouped |
+| `insights/` | descriptive | what was learned; it informs, it does not bind |
+| `projects/` | descriptive | a pointer; the truth is in that project's capsule |
+
+An organization capsule MAY nest: a team is a directory holding a
+`team.md` and its own `members/`, `roles/`, `policies/`, and nested teams —
+the same shape the project format gives a component. A flat capsule (every
+record directory at the root) stays conforming; nesting is what lets a
+division's policy bind its own people without binding the whole company.
+
+The consequence is the one the format exists for: **what governs a member is
+the walk from that member's record up to the root** — their role, their
+team's policies, the company's policies, the charter. It is derived from
+where they sit, never declared on the record, and it changes correctly when
+someone is moved between teams.
+
+This is a second, independent walk from the project format's. What binds a
+*person* comes from the organization tree; what binds a piece of *work* comes
+from the project tree. They meet only in a reader that holds both, and
+neither capsule references the other to make it happen.
+
 ## Deliberately absent
 `issues/`, `discussions/`, `decisions/` — presuming an organization keeps those
 is a guess imported from the project format. A type is earned only where the
 org genuinely needs it.
+
+## Changelog
+- **0.2.0** — the normative/descriptive classification core v0.4.0 requires,
+  and optional team nesting, so what governs a member is derived by walking up
+  from their record. Additive: a flat v0.1.0 capsule conforms unchanged.
