@@ -9,7 +9,7 @@ owner: null
 opened: 2026-08-02
 triaged: 2026-08-02
 closed: 2026-08-02
-fix_commit: null
+fix_commit: "f17cb0f298093078692a2f48b67220191aed8704"
 fix_plan_ref: null
 regression_ref: "examples/netron/.capsa/dependencies/npm-@playwright--test.md — this real dependency stays in the corpus and fails E-DEP-NAME again if the escaping regresses"
 reopens: 0
