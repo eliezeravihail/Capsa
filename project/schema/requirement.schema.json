@@ -3,7 +3,6 @@
   "title": "Capsa requirement",
   "type": "object",
   "required": [
-    "id",
     "title",
     "level",
     "status",
@@ -108,6 +107,67 @@
       "type": "array",
       "items": {
         "type": "integer"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "../../core/schema/link.schema.json"
+      }
+    },
+    "scoped_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scope",
+          "status"
+        ],
+        "properties": {
+          "scope": {
+            "type": "string",
+            "pattern": "^(@?[A-Za-z0-9][A-Za-z0-9._/-]*|\\.{1,2}/[A-Za-z0-9._/-]*)$",
+            "description": "An internal address naming the record this exception applies within — a release line, a component, a requirement. It must resolve."
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric",
+          "op",
+          "value"
+        ],
+        "properties": {
+          "metric": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "op": {
+            "enum": [
+              "<=",
+              ">=",
+              "<",
+              ">",
+              "=="
+            ]
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
       }
     }
   },

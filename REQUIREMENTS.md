@@ -67,6 +67,122 @@ the current spec covers it, with the section noted.
 - [x] D3. Deliberate exclusions (C1-C5) are documented so they are not
       re-litigated as "gaps" — this file
 
+## E. Structure and retrieval (0.3.0)
+
+The requirement behind all of these: an agent must be able to receive **only
+the relevant neighbourhood** of what it is working on. That is a graph query,
+and E1-E4 are what make one expressible.
+
+- [x] E1. **Typed links** — a general, machine-traversable edge between any
+      two records, defined in the CORE grammar so a new kind of edge is not a
+      spec change; authored in one direction, inverse computed by consumers —
+      core §Links
+- [x] E2. **Addresses** — internal paths and external `@slug/path`; internal
+      must resolve, external may dangle, so a capsule stays self-contained
+      (B3) and formats federate instead of merging — core §Addresses
+- [x] E3. **Path identity** — a record is identified by its path; no central
+      number allocation, so concurrent authors never contend (the sibling
+      organization format already identifies this way) — §2.2
+- [x] E4. **Component tree** — a project capsule may describe the system's
+      own structure; records nest under the component they own; the owning
+      component is derived from the path, never stored (B5) — §2.4, §4.10
+- [x] E5. **Promotion preserves single home** — a record moves between
+      capsules leaving a tombstone, never a copy — core §Tombstones
+- [x] E6. **Referential integrity** — internal links must resolve. A graph
+      kept in files has no foreign keys, so the checker is the only
+      enforcement there is — §5.7
+- [x] E7. **Selective retrieval is possible in principle** — tree plus typed
+      edges suffice to compute a bounded, deterministic neighbourhood of any
+      record. The query itself is a consumer's concern and adds no mechanism
+      to the format (B1) — §2.4, core §Links
+
+## F. Tooling boundary (0.3.0)
+
+- [x] F1. **The validator stays read-only** — repair is a maintenance
+      mechanism, which B1 refuses; it belongs to the operator, not the format
+- [x] F2. **Findings carry stable codes and severity** — so an operator's
+      repair tool acts on `code`, never on `message`. Deciding what to repair
+      by matching words in prose breaks on the first rewording, silently
+- [x] F3. **The dependency-free path is checked, not assumed** — the
+      stdlib-only parser must produce the same findings as PyYAML. It was
+      silently dropping `links` when inline mappings were unhandled, which
+      made E6 unverifiable on exactly the machines B4 exists for
+
+## G. Scale of a long-lived product (0.4.0)
+
+Written from testing the format against a large, long-lived codebase: each
+line is a fact such a project holds that 0.3.0 could not express without
+flattening it into something false.
+
+- [x] G1. **Contracts have their own lifecycle** — a plugin API or file format
+      appears in one version, is deprecated in another and removed in a third;
+      consumers need all three dates, not a changelog to infer them from —
+      §4.11
+- [x] G2. **Parallel release lines** — a product maintains several versions at
+      once. One monotonic release list cannot say which line a release belongs
+      to, and one `fix_commit` cannot describe a backport, which is a
+      different commit on each line — §4.7, §4.13, §4.5
+- [x] G3. **Facts that vary** — a requirement met in the current line and
+      unmet in a maintained one, or met everywhere except in one subsystem.
+      `scoped_status` states only the exceptions; the scalar `status` stays
+      the project-wide answer, so the default is never duplicated — §2.5
+- [x] G4. **An exception names a record, not a string** — the scope is an
+      address that must resolve, so a typo is caught rather than silently
+      meaning nothing. *Revised in 0.6.0:* it may name **any** record, not a
+      value from a closed `line:`/`platform:` vocabulary — see H7 — §2.5
+- [x] G5. **Milestones are records** — a free string could carry no date, two
+      plans could spell it differently, and nothing could check either. The
+      roadmap stays derived — §4.12
+- [x] G6. **Quantitative targets are fields** — "under two seconds" is
+      checkable only as `{metric, op, value}`. `targets` states the bar; the
+      verification block states the measurement, so raising a bar does not
+      overwrite what was last measured — §2.6
+
+## H. Placement carries meaning (0.5.0)
+
+E7 said selective retrieval is *possible in principle*, via the tree plus
+edges. Testing that against a reader holding one node exposed the gap: a
+traversal is conditional — on depth, on filtering, on budget — so an
+obligation reachable only by traversing can be missed by a correct reader.
+These are the format-side facts that close it.
+
+- [x] H1. **Placement is scope** — a record applies to the node holding it
+      and everything beneath; a root record applies capsule-wide. So what
+      governs a node is derived by walking to the root, needing no traversal
+      and no guarantee about one — core §Placement, §2.4
+- [x] H2. **Scope is never declared** — no `applies_to`, no glob, no field.
+      Filing the record states it, in the single place B-single-home allows;
+      a scope field would be a second authority on the same question, free to
+      disagree with the path — decisions/0007
+- [x] H3. **A format says which types bind** — the walk is meaningless until
+      normative and descriptive are written down, with a test that needs no
+      judgment: would removing this record permit something beneath it that
+      is not permitted now? — §2.7
+- [x] H4. **Relative addresses** — `./…`, `../…` resolved against the
+      record's own directory. Absolute addresses break when a subtree moves
+      even though both endpoints moved together and nothing changed; with
+      relative ones, moving a subtree is a directory drag — core §Addresses
+- [x] H5. **A link may not restate the tree** — an edge to an ancestor of the
+      record carrying it is refused. Same rule as E4's derived owner, applied
+      to edges; it is what keeps the edge set small enough to stay true, and
+      it caught a real anti-pattern in this repository's own example — §5.13
+- [ ] H6. **Overreach has no meter** — a root-level normative record binds
+      everything, and nothing measures how much any record binds or warns
+      when it is too much. Left open deliberately: a meter is a reader's
+      calibration concern, and no evidence yet says where the bar is
+- [x] H7. **The format names no dimensions of variation** — it has no
+      `platforms/`, and by the same argument no `languages/`,
+      `accessibility/`, `regulations/` or `tiers/`. A constraint on the code
+      is a requirement of the code; where it has code of its own it is a
+      component. A type per dimension is a list with no principled end, and
+      the choice of which dimensions get one would be arbitrary — §2.5
+- [x] H8. **"May be absent" and "may be skipped" are different questions** —
+      the layout section says only that a *writer* need not create a
+      directory. What a *reader* must open is decided by placement and by
+      H3, never by whether the format required the directory. One word was
+      answering both and left it unclear whether an agent should read a
+      section marked optional — §2
+
 ## Decisions taken during requirement gathering (recorded, not deleted)
 
 - Discussions are a separate lightweight type, not folded into decisions —
@@ -79,3 +195,16 @@ the current spec covers it, with the section noted.
 - ~~Ship a hooks layer for solo self-maintenance~~ — rejected: we will not
   maintain a mechanism we do not use. The format is open for others to
   build one on top.
+- ~~`applies_to` — a scope declaration on a constraining record~~ — rejected
+  in favour of H1/H2: placement already states scope, and the case that
+  motivated the field (a constraint written after what it constrains) is
+  served by filing it, with nothing beneath it edited.
+- ~~`platforms/` as a record type~~ — added in 0.4.0, removed in 0.6.0 (H7).
+  It privileged one dimension of variation over every other, and the same
+  argument would have demanded a type for language, accessibility, regulation
+  and customer tier without end.
+- ~~Stable ids, so a move breaks no link~~ — rejected. It optimises the rare
+  operation at the cost of the constant one: a path is read and navigated on
+  every jump and already says what a record is and whose it is, while an id
+  requires a lookup first and says nothing. A move breaks loudly, the
+  validator catches it, and H4 shrinks the blast radius.

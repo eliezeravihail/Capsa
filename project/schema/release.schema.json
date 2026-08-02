@@ -3,7 +3,6 @@
   "title": "Capsa release",
   "type": "object",
   "required": [
-    "id",
     "version",
     "date",
     "commit"
@@ -50,6 +49,18 @@
       ]
     },
     "sbom_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "../../core/schema/link.schema.json"
+      }
+    },
+    "line": {
       "type": [
         "string",
         "null"

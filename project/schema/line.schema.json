@@ -1,45 +1,40 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Capsa insight",
+  "title": "Capsa release line",
+  "description": "One maintained version stream (SPEC 0.4.0 section 4.13).",
   "type": "object",
   "required": [
-    "kind",
     "title",
+    "status",
     "created"
   ],
   "properties": {
-    "kind": {
-      "enum": [
-        "dev",
-        "design",
-        "code"
-      ]
-    },
     "title": {
       "type": "string",
       "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "active",
+        "maintained",
+        "eol"
+      ]
     },
     "created": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}"
     },
-    "updated": {
+    "eol_date": {
       "type": [
         "string",
         "null"
       ],
       "pattern": "^\\d{4}-\\d{2}-\\d{2}"
     },
-    "code_globs": {
+    "links": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
+        "$ref": "../../core/schema/link.schema.json"
       }
     }
   },
@@ -47,18 +42,22 @@
     {
       "if": {
         "properties": {
-          "kind": {
-            "const": "code"
+          "status": {
+            "const": "eol"
           }
-        }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
         "required": [
-          "code_globs"
+          "eol_date"
         ],
         "properties": {
-          "code_globs": {
-            "minItems": 1
+          "eol_date": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

@@ -3,7 +3,6 @@
   "title": "Capsa decision (ADR)",
   "type": "object",
   "required": [
-    "id",
     "title",
     "status",
     "date"
@@ -51,6 +50,12 @@
       "type": "array",
       "items": {
         "type": "string"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "../../core/schema/link.schema.json"
       }
     }
   }

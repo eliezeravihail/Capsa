@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Capsa component",
+  "description": "One part of the system (SPEC 0.3.0 section 4.10). Lives at components/**/component.md; its identity is its path.",
+  "type": "object",
+  "required": [
+    "title",
+    "status",
+    "created"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "active",
+        "deprecated",
+        "retired"
+      ]
+    },
+    "created": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}"
+    },
+    "code_globs": {
+      "description": "Paths in the product repo this component owns. Siblings should not overlap.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "../../core/schema/link.schema.json"
+      }
+    }
+  }
+}

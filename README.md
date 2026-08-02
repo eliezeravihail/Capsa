@@ -42,19 +42,61 @@ accepted dot-directory convention, like `.git/` or `.github/`):
 .capsa/
 ├── capsule.yaml          # manifest: capsa_version, project identity, status
 ├── charter.md            # the project's upfront vision, constraints, ground rules
-├── requirements/         # NNNN-slug.md — needs, formally trackable to met/unmet with evidence
-├── plans/                # NNNN-slug.md — initiatives with work-breakdown, priority, target date
-├── decisions/            # NNNN-slug.md — architecture decisions (ADRs), append-only
-├── discussions/          # NNNN-slug.md — substantive considerations (may graduate to a decision)
-├── issues/               # NNNN-slug.md — bugs / risks / tasks, with lifecycle & severity
+├── requirements/         # needs, formally trackable to met/unmet with evidence
+├── plans/                # initiatives with work-breakdown, priority, target date
+├── decisions/            # architecture decisions (ADRs), append-only
+├── discussions/          # substantive considerations (may graduate to a decision)
+├── issues/               # bugs / risks / tasks, with lifecycle & severity
 ├── dependencies/         # <eco>-<name>.md — one record per dependency: license, tier, decision
 ├── NOTICES               # generated third-party attribution (from dependencies/)
-├── releases/             # NNNN-vX.Y.Z.md — what shipped, when, from which commit
-└── insights/
-    ├── dev/              # development insights — lessons, rationale, what failed
-    ├── design/           # design insights — UX, product, visual-language reasoning
-    └── code/             # code-anchored notes (carry `code_globs`)
+├── releases/             # what shipped, when, from which commit
+├── insights/
+│   ├── dev/              # development insights — lessons, rationale, what failed
+│   ├── design/           # design insights — UX, product, visual-language reasoning
+│   └── code/             # code-anchored notes (carry `code_globs`)
+├── components/           # the system's own structure — nests, and owns records
+│   └── <slug>/
+│       ├── component.md  # what this part is, and which code it owns
+│       ├── issues/       # records belonging to this component
+│       └── components/   # sub-components
+├── interfaces/           # contracts others depend on, with their own lifecycle
+├── milestones/           # dated points several plans aim at
+└── lines/                # maintained release lines (26.x shipping, 25.x fixes)
 ```
+
+A record is identified by its **path**, so names are kebab-case and the
+`NNNN-` prefix is optional ordering — nothing has to allocate a number, and
+two authors on two branches never contend for one.
+
+**Where a record sits is what it applies to.** A requirement or a decision
+filed under `components/render/` is in force for `render` and everything
+inside it; one at the root is in force project-wide. So what governs a given
+part of the system is found by walking from it up to the root — no record
+declares a scope, nothing has to be kept in sync, and moving a directory
+moves what governs it, which is exactly what re-parenting a component means.
+The spec says which record types bind their subtree this way and which merely
+describe.
+
+Records also link to each other with typed edges, for the facts the tree
+cannot hold — a dependency between siblings, a pointer across branches, a
+reference into another capsule:
+
+```yaml
+links:
+  - {rel: implements,     to: requirements/0003-verifiable-claims}
+  - {rel: depends_on,     to: ../capture/component}             # relative: same subtree
+  - {rel: constrained_by, to: "@acme/policies/license-tiers"}   # another capsule
+```
+
+An edge that only restates the tree is rejected, for the same reason a
+component never stores its own owner: the path already says it. And a
+reference inside one subtree is written relative, so the subtree can be moved
+by dragging the directory, with nothing to edit.
+
+A containment tree plus typed edges is enough for a consumer to pull the
+**relevant neighbourhood** of one record — its ancestors, plus k hops over
+its edges — instead of loading the whole capsule. Computing that is the
+consumer's business; the capsule stays passive.
 
 A distinguishing property: **claims that can be checked are formal fields,
 not prose.** A requirement's `met` status, a dependency's license `tier`, a
@@ -64,9 +106,9 @@ compliance in code (*"no deny-tier dependency without an admitting
 decision"*, *"no open S1 at release"*). Prose explains; fields prove.
 
 Every record is `<frontmatter> + <Markdown body>`. The frontmatter fields
-are defined per record type in [`SPEC.md`](./SPEC.md) and enforced by the
-JSON Schemas in [`schema/`](./schema/). Copy-ready starters live in
-[`templates/`](./templates/); a filled example is in
+are defined per record type in [`SPEC.md`](./project/SPEC.md) and enforced by the
+JSON Schemas in [`project/schema/`](./project/schema/). Copy-ready starters live in
+[`project/templates/`](./project/templates/); a filled example is in
 [`examples/`](./examples/).
 
 ## Using it
@@ -91,17 +133,22 @@ The format is the source of truth; validation is a convenience, never
 required. A dependency-free checker is provided:
 
 ```sh
-python3 validator/validate.py path/to/project/.capsa
+python3 tools/validator/validate.py path/to/project/.capsa
 ```
 
 It checks the manifest and every record's frontmatter against
-[`schema/`](./schema/). It only reads — it never writes or "fixes."
+[`project/schema/`](./project/schema/). It only reads — it never writes or "fixes."
 
 ## Status
 
-`capsa_version` **0.2.0** — see [`VERSION`](./VERSION) and
-[`SPEC.md`](./SPEC.md). The format is young; the shape is deliberately
-small so it can stabilize.
+`capsa_version` **0.6.0**, on core **0.4.0** — see [`VERSION`](./VERSION),
+[`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
+format is young; the shape is deliberately small so it can stabilize — and
+shrinking it counts: 0.6.0 removed a record type, because "runs on Windows"
+is a requirement of the code and a platform with its own code is a component,
+so a `platforms/` type was a third name for what the format could already
+say. Two changes so far were not purely additive; both are in the changelog
+with their migration, which in each case is a deletion or a re-filing.
 
 ## License
 

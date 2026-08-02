@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>קפסה — הפורמט</title>
+<style>
+  :root{
+    --ink:#171a1f; --mid:#4a5261; --soft:#767d8b; --line:#dde1e7;
+    --proj:#2563eb; --org:#7c3aed; --ok:#059669; --warn:#c2790b;
+    --tint:#f5f7fa; --tint2:#eef2f8;
+  }
+  @page { size:A4; margin:17mm 15mm 15mm; }
+  *{ box-sizing:border-box; }
+  body{
+    font-family:"DejaVu Sans","Liberation Sans",sans-serif;
+    color:var(--ink); font-size:10.2pt; line-height:1.62; margin:0;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  h1,h2,h3{ line-height:1.28; margin:0; }
+  h2{ font-size:16.5pt; margin:0 0 3mm; letter-spacing:-.2px; }
+  h3{ font-size:11.6pt; margin:6mm 0 2mm; color:var(--mid); }
+  p{ margin:0 0 3mm; }
+  .page{ page-break-after:always; }
+  .page:last-child{ page-break-after:auto; }
+  .lede{ font-size:11pt; color:var(--mid); }
+  .rule{ height:2.2px; background:var(--ink); width:34mm; margin:0 0 5mm; }
+  code,.mono{ font-family:"DejaVu Sans Mono",monospace; font-size:8.6pt;
+    background:var(--tint2); padding:.5mm 1.2mm; border-radius:2px; direction:ltr;
+    display:inline-block; }
+  .note{ background:var(--tint); border-inline-start:2.5px solid var(--proj);
+    padding:3mm 4mm; margin:4mm 0; font-size:9.5pt; }
+  .note.o{ border-color:var(--org); }
+  .note.k{ border-color:var(--ok); }
+  .note b{ color:var(--ink); }
+  table{ border-collapse:collapse; width:100%; font-size:9.1pt; margin:3mm 0; }
+  th{ text-align:right; font-size:8.4pt; text-transform:uppercase;
+      letter-spacing:.4px; color:var(--soft); border-bottom:1.5px solid var(--line);
+      padding:1.5mm 2mm; font-weight:600; }
+  td{ border-bottom:1px solid var(--line); padding:1.8mm 2mm; vertical-align:top; }
+  td:first-child{ white-space:nowrap; }
+  .cap{ font-size:8.4pt; color:var(--soft); margin:1.5mm 0 5mm; text-align:center; }
+  svg{ display:block; margin:4mm auto 0; }
+  ul{ margin:0 0 3mm; padding-inline-start:5mm; }
+  li{ margin-bottom:1.4mm; }
+  .cols{ display:flex; gap:6mm; }
+  .cols>div{ flex:1; }
+  .kicker{ font-size:8.4pt; letter-spacing:1.4px; text-transform:uppercase;
+    color:var(--soft); margin-bottom:2mm; }
+  /* cover */
+  .cover{ height:252mm; display:flex; flex-direction:column; justify-content:center; }
+  .cover h1{ font-size:33pt; letter-spacing:-1px; margin-bottom:4mm; }
+  .cover .sub{ font-size:13pt; color:var(--mid); max-width:120mm; line-height:1.55; }
+  .cover .meta{ margin-top:14mm; font-size:9pt; color:var(--soft);
+    border-top:1px solid var(--line); padding-top:4mm; }
+  .toc{ margin-top:10mm; font-size:9.6pt; }
+  .toc div{ display:flex; gap:3mm; padding:1.4mm 0; border-bottom:1px dotted var(--line); }
+  .toc span:first-child{ color:var(--soft); width:7mm; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<section class="page cover">
+  <div class="kicker">פורמט לתיעוד — גרסה 0.6.0</div>
+  <h1>קפסה</h1>
+  <div class="sub">
+    פורמט אחד לתיעוד <b>פרויקטים</b>, <b>צוות</b> ו<b>חברה</b> — כקבצים
+    קריאים שחיים בתוך המאגר עצמו, ובנוי כך שאפשר לשלוף ממנו בדיוק את
+    החלק הרלוונטי למשימה אחת, ולא את הכול.
+  </div>
+  <div class="toc">
+    <div><span>1</span><span>מה זו קפסה, ואיזו בעיה היא פותרת</span></div>
+    <div><span>2</span><span>הרשומה — היחידה שהכול בנוי ממנה</span></div>
+    <div><span>3</span><span>מעץ לגרף: הכלה וקשתות</span></div>
+    <div><span>4</span><span>מה מתועד בפרויקט</span></div>
+    <div><span>5</span><span>בניית הקשר לסוכן למשימה אחת</span></div>
+    <div><span>6</span><span>הצוות והחברה: אנשים, תפקידים ותובנות</span></div>
+    <div><span>7</span><span>היחס בין תיעוד החברה לתיעוד הפרויקטים</span></div>
+    <div><span>8</span><span>מה נבדק אוטומטית — ומה קפסה איננה</span></div>
+  </div>
+  <div class="meta">
+    מסמך היכרות לקורא טכני שאינו כותב קוד · אין צורך בידע בתכנות
+  </div>
+</section>
+
+<!-- ═══════════ 1 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 1</div>
+  <h2>מה זו קפסה, ואיזו בעיה היא פותרת</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    בכל פרויקט מצטברת אמת שאינה קוד: מה נדרש, מה הוחלט ולמה, מה נשבר, מה
+    נלמד. בדרך כלל היא מפוזרת — חלקה בכלי-משימות, חלקה בצ'אט, ורובה בראש של
+    מי שהיה שם. כשהאדם עוזב, או כשעוברת שנה, היא נעלמת.
+  </p>
+
+  <p>
+    <b>קפסה היא תיקייה של קבצי טקסט קריאים שיושבת בתוך המאגר של המוצר.</b>
+    כל עובדה דורבנית היא רשומה — קובץ אחד, שאדם יכול לקרוא ומכונה יכולה
+    לנתח. אין שרת, אין מסד-נתונים, ואין תוכנה שצריכה לרוץ כדי שהתיעוד
+    יהיה קיים: מעתיקים את הפרויקט — התיעוד בא איתו; מוחקים כל כלי — התיעוד
+    נשאר שלם.
+  </p>
+
+  <h3>שלוש התכונות שקובעות הכול</h3>
+
+  <svg width="482" height="132" viewBox="0 0 482 132" role="img">
+    <g font-family="DejaVu Sans" font-size="10.5">
+      <rect x="1" y="1" width="152" height="130" rx="7" fill="#f5f7fa" stroke="#dde1e7"/>
+      <rect x="165" y="1" width="152" height="130" rx="7" fill="#f5f7fa" stroke="#dde1e7"/>
+      <rect x="329" y="1" width="152" height="130" rx="7" fill="#f5f7fa" stroke="#dde1e7"/>
+      <circle cx="77" cy="34" r="15" fill="#2563eb" opacity=".12"/>
+      <circle cx="241" cy="34" r="15" fill="#7c3aed" opacity=".12"/>
+      <circle cx="405" cy="34" r="15" fill="#059669" opacity=".12"/>
+      <text x="77" y="39" text-anchor="middle" font-size="15">📄</text>
+      <text x="241" y="39" text-anchor="middle" font-size="15">🔗</text>
+      <text x="405" y="39" text-anchor="middle" font-size="15">✓</text>
+      <text x="77"  y="70" text-anchor="middle" font-weight="bold" font-size="11">פסיבי</text>
+      <text x="241" y="70" text-anchor="middle" font-weight="bold" font-size="11">גרף</text>
+      <text x="405" y="70" text-anchor="middle" font-weight="bold" font-size="11">בר-בדיקה</text>
+      <text x="77"  y="88"  text-anchor="middle" fill="#4a5261" font-size="9">שום דבר לא רץ.</text>
+      <text x="77"  y="102" text-anchor="middle" fill="#4a5261" font-size="9">קבצים בלבד, בתוך</text>
+      <text x="77"  y="116" text-anchor="middle" fill="#4a5261" font-size="9">המאגר של המוצר.</text>
+      <text x="241" y="88"  text-anchor="middle" fill="#4a5261" font-size="9">רשומות מקושרות</text>
+      <text x="241" y="102" text-anchor="middle" fill="#4a5261" font-size="9">זו לזו — אפשר לשלוף</text>
+      <text x="241" y="116" text-anchor="middle" fill="#4a5261" font-size="9">שכונה, לא הכול.</text>
+      <text x="405" y="88"  text-anchor="middle" fill="#4a5261" font-size="9">טענה שניתן לבדוק</text>
+      <text x="405" y="102" text-anchor="middle" fill="#4a5261" font-size="9">היא שדה עם ראיה,</text>
+      <text x="405" y="116" text-anchor="middle" fill="#4a5261" font-size="9">לא משפט בפרוזה.</text>
+    </g>
+  </svg>
+  <div class="cap">שלוש התכונות שכל השאר נגזר מהן</div>
+
+  <h3>למה זה חשוב במיוחד כשסוכני-AI עובדים על הפרויקט</h3>
+  <p>
+    לסוכן יש חלון-הקשר מוגבל. אם התיעוד הוא ערימה אחת, יש שתי אפשרויות
+    גרועות: להזרים לו הכול — יקר, איטי, ומטביע את הרלוונטי ברעש — או לתת לו
+    מעט מדי, ואז הוא מנחש. קפסה בנויה כדי לאפשר אפשרות שלישית: <b>לשלוף
+    בדיוק את השכונה של מה שהוא עובד עליה</b>. פרק 5 מראה איך.
+  </p>
+
+  <div class="note">
+    <b>הבחנה שכדאי להחזיק לאורך המסמך:</b> קפסה מתעדת <b>אמת דורבנית</b> —
+    מה נכון לגבי הפרויקט. היא <b>לא</b> מתעדת מצב-ריצה: מי עובד עכשיו, כמה
+    זה עלה, מה קורה ברגע זה. זה נכון לרגע וזורק אחריו; הקפסולה נועדה
+    להיקרא בעוד שלוש שנים.
+  </div>
+</section>
+
+<!-- ═══════════ 2 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 2</div>
+  <h2>הרשומה — היחידה שהכול בנוי ממנה</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    כל דבר בקפסה הוא רשומה: קובץ אחד, עם שני חלקים. למעלה שדות מסודרים
+    שמכונה קוראת; למטה טקסט חופשי שאדם קורא. קובץ אחד משרת את שניהם — ולכן
+    אין שתי גרסאות שיכולות לסתור זו את זו.
+  </p>
+
+  <svg width="486" height="248" viewBox="0 0 486 248" role="img">
+    <g font-family="DejaVu Sans">
+      <rect x="120" y="4" width="246" height="240" rx="6" fill="#fff" stroke="#c9ced8" stroke-width="1.4"/>
+      <!-- frontmatter zone -->
+      <rect x="120" y="4" width="246" height="122" rx="6" fill="#eef2f8"/>
+      <rect x="120" y="118" width="246" height="8" fill="#eef2f8"/>
+      <line x1="120" y1="126" x2="366" y2="126" stroke="#c9ced8" stroke-dasharray="3 2"/>
+      <g font-family="DejaVu Sans Mono" font-size="8.4" fill="#39404d" direction="ltr">
+        <text x="132" y="22">---</text>
+        <text x="132" y="36">title: "Record with pause"</text>
+        <text x="132" y="50">level: must</text>
+        <text x="132" y="64">status: met</text>
+        <text x="132" y="78">verification:</text>
+        <text x="140" y="92">status: verified</text>
+        <text x="140" y="106">evidence_ref: "test_pause"</text>
+        <text x="132" y="120">---</text>
+      </g>
+      <g font-size="8.6" fill="#4a5261">
+        <text x="354" y="146">המשתמש מתחיל הקלטה, עוצר</text>
+        <text x="354" y="162">באמצע, ממשיך — והקובץ שנוצר</text>
+        <text x="354" y="178">רציף. זה הלב של המוצר, ולכן</text>
+        <text x="354" y="194">הוא דרישת must ולא should.</text>
+        <text x="354" y="216" fill="#767d8b">…הנימוק, ההקשר, מה נשקל</text>
+        <text x="354" y="232" fill="#767d8b">ונדחה.</text>
+      </g>
+      <!-- labels -->
+      <g font-size="9.4">
+        <line x1="366" y1="64" x2="404" y2="64" stroke="#2563eb" stroke-width="1.3"/>
+        <circle cx="366" cy="64" r="2.6" fill="#2563eb"/>
+        <text x="410" y="59" fill="#2563eb" font-weight="bold">למכונה</text>
+        <text x="410" y="73" fill="#4a5261" font-size="8.4">שדות · נבדקים</text>
+        <line x1="120" y1="185" x2="82" y2="185" stroke="#059669" stroke-width="1.3"/>
+        <circle cx="120" cy="185" r="2.6" fill="#059669"/>
+        <text x="76" y="180" fill="#059669" font-weight="bold" text-anchor="end">לאדם</text>
+        <text x="76" y="194" fill="#4a5261" font-size="8.4" text-anchor="end">פרוזה · הנימוק</text>
+      </g>
+    </g>
+  </svg>
+  <div class="cap">רשומה אחת — למעלה מה שנבדק, למטה מה שמסבירים</div>
+
+  <h3>ההפרדה הזאת היא הרעיון, לא עיצוב</h3>
+  <p>
+    שימו לב לשדה <span class="mono">status: met</span> — "הדרישה מתקיימת".
+    בקפסה אי אפשר לכתוב אותו לבד: הוא מחייב בלוק <span class="mono">verification</span>
+    שמצביע על <b>הראיה</b> — הבדיקה שרצה, הסריקה, המדידה. טענה שאין מתחתיה
+    ראיה נחשבת "לא מאומתת", וזו עובדה גלויה ולא "כנראה בסדר".
+  </p>
+  <p>
+    הכלל הזה הוא מה שמבדיל בין תיעוד שאפשר לסמוך עליו לבין תיעוד שמישהו
+    כתב פעם. הוא גם מה שמאפשר לשאול שאלות במכונה: <i>"האם כל דרישת-חובה
+    מאומתת לפני שחרור?"</i> היא שאילתה, לא סקר.
+  </p>
+
+  <h3>זהות: הנתיב הוא השם</h3>
+  <p>
+    רשומה מזוהה לפי <b>הנתיב שלה</b> — התיקייה והשם. אין מספר רץ מרכזי
+    שצריך להקצות. זה נשמע טכני, והוא פותר בעיה מאוד לא-טכנית: כששני אנשים
+    עובדים במקביל, מספור רץ מבטיח שהם יתנגשו — שניהם ייקחו את "המספר הבא".
+    נתיב לא מתנגש.
+  </p>
+</section>
+
+<!-- ═══════════ 3 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 3</div>
+  <h2>מעץ לגרף: הכלה וקשתות</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    לקפסה יש שני מבנים בו-זמנית, בדיוק כמו לקוד: <b>עץ</b> שאומר מה שייך
+    למה, ו<b>קשתות</b> שאומרות מה קשור למה. העץ הוא התיקיות; הקשתות הן
+    קישורים מפורשים בתוך הרשומות.
+  </p>
+
+  <svg width="490" height="286" viewBox="0 0 490 286" role="img">
+    <defs>
+      <marker id="a1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 z" fill="#7c3aed"/>
+      </marker>
+    </defs>
+    <g font-family="DejaVu Sans" font-size="9">
+      <!-- TREE (right) -->
+      <rect x="257" y="1" width="232" height="284" rx="7" fill="#f9fafc" stroke="#dde1e7"/>
+      <text x="373" y="20" text-anchor="middle" font-weight="bold" font-size="10">העץ — מה שייך למה</text>
+      <g font-family="DejaVu Sans Mono" font-size="8.2" fill="#39404d" direction="ltr">
+        <text x="272" y="44">.capsa/</text>
+        <text x="282" y="60">requirements/</text>
+        <text x="282" y="76">decisions/</text>
+        <text x="282" y="92">components/</text>
+        <text x="294" y="108">render/</text>
+        <text x="306" y="124">component.md</text>
+        <text x="306" y="140">issues/</text>
+        <text x="318" y="156">tiling-seam.md</text>
+        <text x="306" y="172">components/</text>
+        <text x="318" y="188">tiling/</text>
+        <text x="294" y="208">color-engine/</text>
+        <text x="306" y="224">component.md</text>
+      </g>
+      <path d="M288 48 v 176" stroke="#c9ced8" stroke-dasharray="2 2" fill="none"/>
+      <path d="M300 96 v 112" stroke="#c9ced8" stroke-dasharray="2 2" fill="none"/>
+      <path d="M312 112 v 60" stroke="#c9ced8" stroke-dasharray="2 2" fill="none"/>
+      <text x="373" y="250" text-anchor="middle" fill="#4a5261" font-size="8.4">התקלה יושבת בתוך הרכיב</text>
+      <text x="373" y="264" text-anchor="middle" fill="#4a5261" font-size="8.4">שהיא שייכת לו — הבעלות</text>
+      <text x="373" y="278" text-anchor="middle" fill="#4a5261" font-size="8.4">נגזרת מהמיקום, לא נכתבת.</text>
+
+      <!-- GRAPH (left) -->
+      <rect x="1" y="1" width="244" height="284" rx="7" fill="#f9fafc" stroke="#dde1e7"/>
+      <text x="123" y="20" text-anchor="middle" font-weight="bold" font-size="10">הקשתות — מה קשור למה</text>
+      <g>
+        <rect x="79" y="40" width="88" height="26" rx="4" fill="#fff" stroke="#2563eb"/>
+        <text x="123" y="57" text-anchor="middle" font-size="8.6">דרישה</text>
+        <rect x="79" y="118" width="88" height="26" rx="4" fill="#fff" stroke="#7c3aed"/>
+        <text x="123" y="135" text-anchor="middle" font-size="8.6">רכיב render</text>
+        <rect x="13" y="200" width="78" height="26" rx="4" fill="#fff" stroke="#059669"/>
+        <text x="52" y="217" text-anchor="middle" font-size="8.6">החלטה</text>
+        <rect x="157" y="200" width="78" height="26" rx="4" fill="#fff" stroke="#c2790b"/>
+        <text x="196" y="217" text-anchor="middle" font-size="8.6">תובנה</text>
+      </g>
+      <g stroke="#7c3aed" stroke-width="1.2" fill="none" marker-end="url(#a1)" opacity=".9">
+        <path d="M123 118 L123 70"/>
+        <path d="M60 200 L104 148"/>
+        <path d="M188 200 L146 148"/>
+      </g>
+      <g font-size="7.2" fill="#7c3aed" font-family="DejaVu Sans Mono" direction="ltr">
+        <text x="129" y="96">affects</text>
+        <text x="8"  y="180">constrained_by</text>
+        <text x="150" y="180">anchored_to</text>
+      </g>
+      <text x="123" y="252" text-anchor="middle" fill="#4a5261" font-size="8.4">לכל קשת יש <tspan font-weight="bold">סוג</tspan> — ולכן אפשר</text>
+      <text x="123" y="266" text-anchor="middle" fill="#4a5261" font-size="8.4">ללכת רק לאורך הסוגים</text>
+      <text x="123" y="280" text-anchor="middle" fill="#4a5261" font-size="8.4">הרלוונטיים למשימה.</text>
+    </g>
+  </svg>
+  <div class="cap">אותה קפסולה, שני מבנים: הכלה (ימין) וקישור (שמאל)</div>
+
+  <div class="note">
+    <b>למה קבצים ולא מסד-נתונים-גרפי?</b> משום שכל היתרונות של גרף מתקבלים
+    כאן בלי לוותר על מה שקבצים נותנים בחינם: היסטוריה מלאה, השוואת גרסאות,
+    סקירת שינויים, וגיבוי — כל אלה כבר קיימים במערכת ניהול-הגרסאות שהפרויקט
+    ממילא משתמש בה. הגרף הניתן-לשאילתה נבנה מהקבצים בזיכרון בעת הצורך, ואפשר
+    למחוק אותו ולבנות מחדש. הקבצים הם האמת.
+  </div>
+</section>
+
+<!-- ═══════════ 4 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 4</div>
+  <h2>מה מתועד בפרויקט</h2>
+  <div class="rule"></div>
+  <p class="lede">
+    סוגי הרשומות אינם רשימה שרירותית — כל אחד הוא סוג אמת שמתנהג אחרת
+    לאורך זמן. אין ביניהם סוג עבור "פלטפורמה", "שפה" או "רגולציה": מגבלה
+    על הקוד היא <b>דרישה</b> שלו, וכשיש לה קוד נפרד היא ממילא <b>רכיב</b>.
+    פורמט שמעניק סעיף משלו למימד אחד היה חייב להעניק סעיף לכל מימד.
+  </p>
+
+  <table>
+    <tr><th>סוג</th><th>מה זה</th><th>התכונה שמייחדת אותו</th></tr>
+    <tr><td><b>אמנה</b></td><td>החזון, האילוצים, כללי היסוד</td><td>נכתב בהתחלה, משתנה לעיתים רחוקות</td></tr>
+    <tr><td><b>דרישה</b></td><td>מה המוצר חייב לעשות</td><td>חייבת ראיה כדי להיחשב "מתקיימת"</td></tr>
+    <tr><td><b>תוכנית</b></td><td>יוזמה שמתפרקת למשימות</td><td>נגמרת — בשונה מהפרויקט</td></tr>
+    <tr><td><b>החלטה</b></td><td>הכרעה ארכיטקטונית והנימוק לה</td><td>לא נמחקת ולא נערכת; מוחלפת בהחלטה חדשה</td></tr>
+    <tr><td><b>דיון</b></td><td>שיקולים שנשקלו</td><td>שווה שמירה גם בלי הכרעה</td></tr>
+    <tr><td><b>תקלה</b></td><td>באג, סיכון, או מטלה</td><td>סגירה מחייבת תיקון <i>ובדיקת-רגרסיה</i></td></tr>
+    <tr><td><b>תלות</b></td><td>ספריית צד-שלישי + הרישיון שלה</td><td>נושאת עובדות שמאפשרות בדיקת-ציות</td></tr>
+    <tr><td><b>שחרור</b></td><td>מה יצא, מתי, מאיזה commit</td><td>עונה "מה היה ב-2.3" שנים אחרי</td></tr>
+    <tr><td><b>תובנה</b></td><td>ידע שנלמד — הנדסי, עיצובי, או צמוד-קוד</td><td>לא החלטה ולא משימה; ידע</td></tr>
+    <tr><td><b>רכיב</b></td><td>חלק מהמערכת: מודול, תת-מערכת</td><td>עונה "מה הארכיטקטורה <i>עכשיו</i>"</td></tr>
+    <tr><td><b>ממשק</b></td><td>חוזה שאחרים תלויים בו</td><td>מחזור-חיים משלו: נוסף · הופחת · הוסר</td></tr>
+    <tr><td><b>אבן-דרך</b></td><td>נקודת-זמן שתוכניות מכוונות אליה</td><td>תאריך שאפשר לתלות עליו</td></tr>
+    <tr><td><b>קו-גרסה</b></td><td>זרם-תחזוקה (26.x חי, 25.x תיקונים)</td><td>מאפשר לתעד backport נכון</td></tr>
+  </table>
+
+  <h3>שתי דוגמאות ל"עובדה שאינה סקלרית"</h3>
+  <div class="cols">
+    <div>
+      <p style="font-size:9.4pt">
+        <b>דרישה שמתקיימת חלקית.</b> "מתקיים ב-Windows, לא ב-iPad" אינו
+        ערך אחד. במקום לעגל לתשובה אחת שקרית, הרשומה נושאת תשובה כללית
+        <i>ורשימת חריגים</i>, וכל חריג <b>מצביע על רשומה קיימת</b> — הדרישה
+        "לרוץ על iPad", או הרכיב שמממש אותה. אין רשימת-מימדים סגורה בפורמט:
+        מוצר משתנה לפי גרסה, לפי תת-מערכת, לפי רגולציה, לפי שפה ולפי נגישות,
+        וכולן כבר רשומות במקום שבו הן חלות.
+      </p>
+    </div>
+    <div>
+      <p style="font-size:9.4pt">
+        <b>תיקון שעבר backport.</b> אותו באג תוקן בקו הנוכחי ובקו
+        המתוחזק — בשני commit-ים <i>שונים</i>. שדה יחיד יכול לתאר רק אחד
+        מהם, ולכן יש רשימה לפי קו.
+      </p>
+    </div>
+  </div>
+
+  <div class="note k">
+    <b>מה שכל אלה חולקים:</b> טענה שניתן לבדוק הופכת ל<b>שדה</b>, לא
+    למשפט. "אין תקלת חומרה פתוחה", "אין תלות עם רישיון לא-מאושר", "כל
+    דרישת-חובה מאומתת" — כל אלה הופכות לשאלות שמכונה עונה עליהן בשנייה,
+    במקום לסקר ידני לפני כל שחרור.
+  </div>
+</section>
+
+<!-- ═══════════ 5 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 5 · הלב של המסמך</div>
+  <h2>בניית הקשר לסוכן למשימה אחת</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    זו השאלה שהפורמט נבנה כדי לענות עליה: סוכן מקבל משימה אחת — למשל
+    "תקן את התפר בריצוף" — ואנחנו רוצים לתת לו את מה שרלוונטי, ורק אותו.
+  </p>
+
+  <svg width="492" height="300" viewBox="0 0 492 300" role="img">
+    <defs>
+      <marker id="a2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 z" fill="#2563eb"/>
+      </marker>
+    </defs>
+    <g font-family="DejaVu Sans" font-size="8.8">
+      <!-- SOURCE: the whole capsule, on the RIGHT (read first in RTL) -->
+      <rect x="205" y="1" width="286" height="298" rx="7" fill="#fbfcfd" stroke="#dde1e7"/>
+      <text x="348" y="20" text-anchor="middle" font-size="9.6" font-weight="bold">הקפסולה כולה</text>
+      <text x="348" y="33" text-anchor="middle" font-size="8" fill="#767d8b">אלפי רשומות</text>
+      <g fill="#e6e9ee">
+        <circle cx="242" cy="62" r="7"/><circle cx="276" cy="50" r="7"/><circle cx="456" cy="60" r="7"/>
+        <circle cx="234" cy="112" r="7"/><circle cx="452" cy="120" r="7"/><circle cx="468" cy="176" r="7"/>
+        <circle cx="244" cy="176" r="7"/><circle cx="270" cy="232" r="7"/><circle cx="324" cy="266" r="7"/>
+        <circle cx="400" cy="270" r="7"/><circle cx="442" cy="232" r="7"/><circle cx="238" cy="256" r="7"/>
+        <circle cx="354" cy="46" r="7"/><circle cx="416" cy="44" r="7"/><circle cx="302" cy="282" r="7"/>
+        <circle cx="468" cy="264" r="7"/><circle cx="222" cy="196" r="7"/><circle cx="476" cy="96" r="7"/>
+      </g>
+      <rect x="300" y="66" width="96" height="22" rx="4" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
+      <text x="348" y="81" text-anchor="middle" fill="#5b21b6">רכיב: render</text>
+      <rect x="308" y="104" width="80" height="20" rx="4" fill="#fff" stroke="#7c3aed" stroke-width="1.1" opacity=".85"/>
+      <text x="348" y="118" text-anchor="middle" fill="#5b21b6" font-size="8.2">תת-רכיב: tiling</text>
+      <circle cx="348" cy="160" r="21" fill="#2563eb"/>
+      <text x="348" y="157" text-anchor="middle" fill="#fff" font-size="8.4" font-weight="bold">המשימה</text>
+      <text x="348" y="169" text-anchor="middle" fill="#fff" font-size="7.6">תפר בריצוף</text>
+      <rect x="228" y="200" width="84" height="22" rx="4" fill="#fff" stroke="#059669" stroke-width="1.2"/>
+      <text x="270" y="215" text-anchor="middle" fill="#065f46" font-size="8.2">החלטה: מטמון</text>
+      <rect x="386" y="200" width="82" height="22" rx="4" fill="#fff" stroke="#c2790b" stroke-width="1.2"/>
+      <text x="427" y="215" text-anchor="middle" fill="#92400e" font-size="8.2">תובנה: תזמון</text>
+      <rect x="302" y="238" width="92" height="22" rx="4" fill="#fff" stroke="#2563eb" stroke-width="1.2"/>
+      <text x="348" y="253" text-anchor="middle" fill="#1e40af" font-size="8.2">דרישה: רציפות</text>
+      <g stroke="#2563eb" stroke-width="1.2" fill="none" opacity=".85">
+        <path d="M348 124 L348 139"/>
+        <path d="M348 88 L348 104"/>
+        <path d="M330 172 L300 200"/>
+        <path d="M366 172 L400 200"/>
+        <path d="M348 181 L348 238"/>
+      </g>
+      <!-- arrow RIGHT -> LEFT, the RTL reading direction -->
+      <path d="M204 150 L174 150" stroke="#2563eb" stroke-width="1.7" marker-end="url(#a2)" fill="none"/>
+
+      <!-- RESULT: the package, on the LEFT -->
+      <rect x="2" y="40" width="164" height="220" rx="7" fill="#eff5ff" stroke="#2563eb" stroke-width="1.2"/>
+      <text x="84" y="60" text-anchor="middle" font-size="9.6" font-weight="bold" fill="#1e40af">חבילת ההקשר</text>
+      <text x="84" y="73" text-anchor="middle" font-size="8" fill="#4a5261">מה שנשלח לסוכן</text>
+      <g font-size="8.4" fill="#39404d">
+        <text x="150" y="96">▸ המשימה עצמה</text>
+        <text x="150" y="116">▸ הרכיב שהיא בתוכו,</text>
+        <text x="140" y="130">והרכיב שמעליו</text>
+        <text x="150" y="150">▸ הדרישה שהיא משרתת</text>
+        <text x="150" y="170">▸ ההחלטה שמגבילה אותה</text>
+        <text x="150" y="190">▸ התובנה המעוגנת בקוד</text>
+        <text x="150" y="210">▸ מה כבר נוסה ונדחה</text>
+      </g>
+      <line x1="18" y1="222" x2="150" y2="222" stroke="#c7d7f5"/>
+      <text x="84" y="240" text-anchor="middle" font-size="8.2" fill="#1e40af">חלק קטן מהקפסולה —</text>
+      <text x="84" y="252" text-anchor="middle" font-size="8.2" fill="#1e40af">והחלק שמשנה את התוצאה</text>
+    </g>
+  </svg>
+  <div class="cap">מהזרע החוצה: אבות בעץ + צעדים על קשתות ← חבילת הקשר סגורה</div>
+
+  <h3>איך זה נקבע — בשלושה כללים</h3>
+  <ul>
+    <li><b>האבות בעץ.</b> המשימה יושבת ברכיב; הרכיב יושב ברכיב-על. אלה
+      ההקשר שבתוכו היא חיה, והם נכנסים תמיד.</li>
+    <li><b>k צעדים על קשתות, מסוננים לפי סוג.</b> "מה שמגביל אותי", "מה
+      שאני משרת", "מה שמעוגן בקוד שלי" — נכנסים. "מי עוד תלוי בי" יכול
+      להישאר בחוץ אם אינו רלוונטי למשימה.</li>
+    <li><b>תקציב.</b> אם החבילה גדולה מדי, חותכים לפי מרחק — לא באקראי.</li>
+  </ul>
+
+  <div class="note">
+    <b>למה זה חייב להיות מבני ולא "חיפוש חכם":</b> חיפוש-דמיון סמנטי מדרג
+    לפי דמיון ניסוח. החלטה שמגבילה את המשימה עשויה להיות מנוסחת בלי אף מילה
+    משותפת איתה — והיא בדיוק מה שאסור לפספס. לכן <b>המבנה בוחר</b> מה נכנס
+    (שלמות מובטחת), ודמיון סמנטי לכל היותר <b>מדרג</b> בתוך מה שכבר נבחר.
+    חבילה שהשמיטה בשקט החלטה מגבילה שגויה באופן שציון-דמיון לא יכול לזהות.
+  </div>
+</section>
+
+<!-- ═══════════ 6 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 6</div>
+  <h2>הצוות והחברה: אנשים, תפקידים ותובנות</a></h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    לחברה יש אמת משלה, שאינה שייכת לאף פרויקט: מי עובד כאן, מה כל תפקיד
+    אחראי לו, ומה הארגון למד. זהו <b>פורמט הארגון</b> — אותו דקדוק בדיוק,
+    סוגי רשומות אחרים, ובית נפרד.
+  </p>
+
+  <svg width="490" height="252" viewBox="0 0 490 252" role="img">
+    <defs>
+      <marker id="a3" markerWidth="6.5" markerHeight="6.5" refX="5.6" refY="3.2" orient="auto">
+        <path d="M0,0 L6.5,3.2 L0,6.5 z" fill="#7c3aed"/>
+      </marker>
+    </defs>
+    <g font-family="DejaVu Sans" font-size="9">
+      <rect x="1" y="1" width="488" height="250" rx="7" fill="#faf8fe" stroke="#e4dcf7"/>
+      <!-- role -->
+      <rect x="196" y="20" width="100" height="34" rx="5" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
+      <text x="246" y="35" text-anchor="middle" font-weight="bold" font-size="9.2">תפקיד</text>
+      <text x="246" y="47" text-anchor="middle" font-size="7.8" fill="#4a5261">אחריות · כישורים</text>
+      <!-- member -->
+      <rect x="196" y="96" width="100" height="34" rx="5" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
+      <text x="246" y="111" text-anchor="middle" font-weight="bold" font-size="9.2">איש צוות</text>
+      <text x="246" y="123" text-anchor="middle" font-size="7.8" fill="#4a5261">אדם או סוכן</text>
+      <!-- team -->
+      <rect x="26" y="96" width="94" height="34" rx="5" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
+      <text x="73" y="111" text-anchor="middle" font-weight="bold" font-size="9.2">צוות</text>
+      <text x="73" y="123" text-anchor="middle" font-size="7.8" fill="#4a5261">מי עובד יחד</text>
+      <!-- onboarding -->
+      <rect x="368" y="96" width="98" height="34" rx="5" fill="#fff" stroke="#7c3aed" stroke-width="1.3"/>
+      <text x="417" y="111" text-anchor="middle" font-weight="bold" font-size="9.2">חפיפה</text>
+      <text x="417" y="123" text-anchor="middle" font-size="7.8" fill="#4a5261">מה לקרוא, בסדר</text>
+      <!-- insights -->
+      <rect x="150" y="176" width="192" height="52" rx="5" fill="#fff" stroke="#c2790b" stroke-width="1.5"/>
+      <text x="246" y="194" text-anchor="middle" font-weight="bold" font-size="9.6" fill="#92400e">תובנות</text>
+      <text x="246" y="208" text-anchor="middle" font-size="8.2" fill="#4a5261">הידע שנצבר — נושא את מי כתב אותו</text>
+      <text x="246" y="221" text-anchor="middle" font-size="8.2" fill="#4a5261">ובאיזה תחום</text>
+      <g stroke="#7c3aed" stroke-width="1.15" fill="none" marker-end="url(#a3)">
+        <path d="M246 96 L246 56"/>
+        <path d="M196 113 L122 113"/>
+        <path d="M296 113 L366 113"/>
+        <path d="M232 176 L232 132"/>
+      </g>
+      <g font-size="7.4" fill="#7c3aed" font-family="DejaVu Sans Mono" direction="ltr">
+        <text x="252" y="78">role_ref</text>
+        <text x="140" y="108">member_refs</text>
+        <text x="308" y="108">reading_refs</text>
+        <text x="180" y="156">member_ref</text>
+      </g>
+      <path d="M292 176 L292 132" stroke="#c2790b" stroke-width="1.15" fill="none" stroke-dasharray="3 2"/>
+      <text x="298" y="156" font-size="7.4" fill="#92400e" font-family="DejaVu Sans Mono" direction="ltr">role_ref</text>
+    </g>
+  </svg>
+  <div class="cap">פורמט הארגון — התובנה מחוברת גם למי שכתב אותה וגם לתחום שלה</div>
+
+  <h3>התכונה החשובה: הידע שורד את התחלופה</h3>
+  <p>
+    כשאיש צוות עוזב, הרשומה שלו לא נמחקת — היא עוברת למצב "עזב". <b>התובנות
+    שהוא כתב נשארות</b>, וממשיכות להיות מחוברות לתחום שלהן. זה ההבדל בין
+    ארגון שבו הידע יושב בראש של אנשים לבין ארגון שבו הוא נכס.
+  </p>
+  <p>
+    ומכאן נובעת החפיפה: רשומת-חפיפה היא רשימת קריאה מסודרת שנבנית מהידע
+    שכבר נאסף. מי שנכנס לתפקיד מקבל את מה שקודמו למד, לא דף ריק. זה נכון
+    באותה מידה לאדם חדש ולסוכן שמתחיל משמרת — שניהם "אנשי צוות" בפורמט,
+    ובמכוון.
+  </p>
+
+  <h3>שתי רמות של ידע</h3>
+  <div class="cols">
+    <div>
+      <p style="font-size:9.4pt"><b>תובנה של תפקיד.</b> "כשבודקים ביצועים
+      של רינדור, המדד שמטעה הוא ממוצע ולא אחוזון 95." שייכת למקצוע —
+      ורלוונטית לכל מי שימלא את התפקיד, בכל פרויקט.</p>
+    </div>
+    <div>
+      <p style="font-size:9.4pt"><b>תובנה של החברה.</b> "החלטות רישוי
+      נסגרות מול היועץ המשפטי לפני ולא אחרי הבחירה בספרייה." חוצה תפקידים
+      ופרויקטים — ולכן היא של הארגון כולו.</p>
+    </div>
+  </div>
+  <div class="note o">
+    <b>הכלל שמונע כפילות:</b> לכל עובדה יש <b>בית אחד</b>. תובנה לא
+    מועתקת בין רשומות — היא נכתבת פעם אחת, ומי שצריך אותה <i>מצביע</i>
+    עליה. שתי גרסאות של אותה עובדה הן שתי גרסאות שיסתרו זו את זו ביום שאחת
+    מהן תתעדכן.
+  </div>
+</section>
+
+<!-- ═══════════ 7 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 7</div>
+  <h2>היחס בין תיעוד החברה לתיעוד הפרויקטים</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    שתי קפסולות, שני בתים — ובכוונה. ההפרדה אינה סדר לשם סדר; היא נובעת
+    משלושה גבולות אמיתיים.
+  </p>
+
+  <svg width="492" height="272" viewBox="0 0 492 272" role="img">
+    <defs>
+      <marker id="a4" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 z" fill="#7c3aed"/>
+      </marker>
+      <marker id="a5" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 z" fill="#c2790b"/>
+      </marker>
+    </defs>
+    <g font-family="DejaVu Sans" font-size="9">
+      <!-- org capsule -->
+      <rect x="286" y="14" width="204" height="244" rx="8" fill="#faf8fe" stroke="#7c3aed" stroke-width="1.4"/>
+      <text x="388" y="36" text-anchor="middle" font-weight="bold" font-size="10.4" fill="#5b21b6">קפסולת הארגון</text>
+      <text x="388" y="50" text-anchor="middle" font-size="8" fill="#4a5261">נשארת בבית · לא נוסעת לשום מקום</text>
+      <g font-size="8.4" fill="#39404d">
+        <text x="474" y="76">▸ אנשי צוות · תפקידים · צוותים</text>
+        <text x="474" y="96">▸ תובנות הארגון</text>
+        <text x="474" y="116">▸ מדיניות (רישוי, אבטחה)</text>
+        <text x="474" y="136">▸ חפיפה והכשרה</text>
+        <text x="474" y="156">▸ מצביעים לפרויקטים</text>
+      </g>
+      <rect x="300" y="176" width="176" height="66" rx="5" fill="#fff" stroke="#c9b8ef" stroke-dasharray="3 2"/>
+      <text x="388" y="194" text-anchor="middle" font-size="8.2" fill="#5b21b6">כאן יושבים הקישורים</text>
+      <text x="388" y="208" text-anchor="middle" font-size="8.2" fill="#5b21b6">חוצי-הקפסולות —</text>
+      <text x="388" y="224" text-anchor="middle" font-size="8.2" fill="#4a5261">"הצוות הזה מחזיק</text>
+      <text x="388" y="236" text-anchor="middle" font-size="8.2" fill="#4a5261">את הרכיב ההוא"</text>
+
+      <!-- project capsules -->
+      <rect x="14" y="24" width="176" height="70" rx="8" fill="#eff5ff" stroke="#2563eb" stroke-width="1.3"/>
+      <text x="102" y="46" text-anchor="middle" font-weight="bold" font-size="9.8" fill="#1e40af">קפסולת פרויקט א׳</text>
+      <text x="102" y="62" text-anchor="middle" font-size="8" fill="#4a5261">בתוך מאגר המוצר</text>
+      <text x="102" y="78" text-anchor="middle" font-size="8" fill="#4a5261">נוסעת איתו לכל מקום</text>
+
+      <rect x="14" y="112" width="176" height="70" rx="8" fill="#eff5ff" stroke="#2563eb" stroke-width="1.3"/>
+      <text x="102" y="134" text-anchor="middle" font-weight="bold" font-size="9.8" fill="#1e40af">קפסולת פרויקט ב׳</text>
+      <text x="102" y="150" text-anchor="middle" font-size="8" fill="#4a5261">דרישות · החלטות · תקלות</text>
+      <text x="102" y="166" text-anchor="middle" font-size="8" fill="#4a5261">רכיבים · שחרורים</text>
+
+      <rect x="14" y="200" width="176" height="58" rx="8" fill="#f4f8ff" stroke="#9dbcf0" stroke-dasharray="4 3"/>
+      <text x="102" y="222" text-anchor="middle" font-size="8.6" fill="#1e40af">…וכל פרויקט נוסף</text>
+      <text x="102" y="240" text-anchor="middle" font-size="8" fill="#4a5261">עצמאי לחלוטין</text>
+
+      <!-- strong links inward -->
+      <g stroke="#7c3aed" stroke-width="1.3" fill="none" marker-end="url(#a4)">
+        <path d="M286 120 C 240 110, 230 66, 192 60"/>
+        <path d="M286 140 C 244 146, 232 146, 192 146"/>
+      </g>
+      <text x="238" y="98" text-anchor="middle" font-size="7.6" fill="#5b21b6">קישורים חזקים</text>
+      <text x="238" y="110" text-anchor="middle" font-size="7.6" fill="#5b21b6">פנימה ←</text>
+
+      <!-- promotion -->
+      <path d="M192 176 C 240 200, 250 200, 300 190" stroke="#c2790b" stroke-width="1.3"
+            fill="none" marker-end="url(#a5)" stroke-dasharray="4 2.5"/>
+      <text x="246" y="184" text-anchor="middle" font-size="7.6" fill="#92400e">קידום תובנה ↗</text>
+    </g>
+  </svg>
+  <div class="cap">הפרויקט נוסע; הארגון נשאר. הקישורים החזקים מצביעים פנימה.</div>
+
+  <h3>שלושת הגבולות</h3>
+  <ul>
+    <li><b>גבול ניידות.</b> קפסולת-פרויקט נוסעת עם המאגר — clone, fork,
+      מסירה ללקוח או לקבלן. אם ידע החברה יושב בתוכה, הוא נוסע איתה.</li>
+    <li><b>גבול מחזור-חיים.</b> פרויקט מגיע לארכיון; החברה לא. ידע ארגוני
+      חייב לשרוד את ארכוב הפרויקט שבו נלמד.</li>
+    <li><b>גבול סמכות.</b> מדיניות ורוסטר אינם אמורים להיות ניתנים לעריכה
+      על-ידי מי שעובד על פרויקט מסוים.</li>
+  </ul>
+
+  <h3>ואיך בכל זאת מצליבים ביניהם</h3>
+  <p>
+    כתובת חוצת-קפסולות. קישור פנימי <b>חייב</b> להצביע על רשומה קיימת;
+    קישור חיצוני <b>רשאי</b> להישאר בלתי-פתיר — וזו בדיוק ערובת הניידות:
+    קפסולת-פרויקט נשארת תקפה וקריאה גם כשאף קפסולה אחרת אינה מחוברת. מכאן
+    נובע שהקישורים החזקים יושבים בצד שנשאר בבית.
+  </p>
+  <div class="note o">
+    <b>ומה עם תובנה שנולדה בפרויקט והתבררה כארגונית?</b> היא <b>עוברת</b>
+    לקפסולת הארגון, ובמקומה נשארת "מצבה" — רשומה קצרה שאומרת לאן היא הלכה.
+    לא העתקה: בית אחד לכל עובדה, וההיסטוריה לא נקטעת.
+  </div>
+</section>
+
+<!-- ═══════════ 8 ═══════════ -->
+<section class="page">
+  <div class="kicker">פרק 8</div>
+  <h2>מה נבדק אוטומטית — ומה קפסה איננה</h2>
+  <div class="rule"></div>
+
+  <p class="lede">
+    לפורמט נלווה בודק קריאה-בלבד. הוא לא מתקן ולא כותב — הוא אומר מה לא
+    תקין, בשפה שגם תוכנה יכולה לפעול לפיה.
+  </p>
+
+  <table>
+    <tr><th>נבדק</th><th>מה זה מונע בפועל</th></tr>
+    <tr><td>דרישה "מתקיימת" ללא ראיה</td><td>סטטוס שמישהו עדכן בתקווה</td></tr>
+    <tr><td>באג סגור ללא תיקון ובדיקת-רגרסיה</td><td>באג שיחזור ואיש לא ידע שכבר היה</td></tr>
+    <tr><td>קישור פנימי שמצביע לשומקום</td><td>גרף שנראה שלם ואינו — הסכנה האמיתית</td></tr>
+    <tr><td>חריג שמצביע על רשומה שאינה קיימת</td><td>שגיאת כתיב שבשקט לא אומרת כלום</td></tr>
+    <tr><td>קישור שחוזר על מה שהנתיב כבר אומר</td><td>קשת מיותרת שצריך לתחזק לנצח</td></tr>
+    <tr><td>ממשק "הוסר" בלי תאריך הסרה</td><td>צרכן שמגלה את ההסרה בדרך הקשה</td></tr>
+    <tr><td>תלות עם רישיון אסור ללא החלטה מאשרת</td><td>חשיפה משפטית שאיש לא הכריע עליה</td></tr>
+  </table>
+
+  <p>
+    כל ממצא נושא <b>קוד יציב</b> ו<b>דרגת חומרה</b>. הקוד הוא מה שתוכנה
+    פועלת לפיו; הניסוח לאדם עשוי להשתנות. אזהרה אינה פוסלת קפסולה — היא
+    מציינת דבר שכדאי, ולא דבר שחייבים.
+  </p>
+
+  <h3>מה קפסה איננה — במכוון</h3>
+  <div class="cols">
+    <div>
+      <ul style="font-size:9.3pt">
+        <li><b>לא כלי ניהול משימות.</b> אין "מי עובד עכשיו", אין שעות, אין
+          לוח פעיל. זה מצב-ריצה, והוא נכון לרגע.</li>
+        <li><b>לא מדדים.</b> כל מה שנגזר מהרשומות — ספירות, לוחות-זמנים,
+          דוחות — מחושב בעת הצורך ולא נשמר.</li>
+      </ul>
+    </div>
+    <div>
+      <ul style="font-size:9.3pt">
+        <li><b>לא קוד.</b> הקפסולה מתארת את הפרויקט; המאגר סביבה מחזיק את
+          המוצר.</li>
+        <li><b>לא מתקנת את עצמה.</b> הבודק קורא בלבד. תיקון הוא פעולת
+          תחזוקה — ושייך לכלי שמפעילים, לא לפורמט.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note k">
+    <b>בשורה אחת:</b> קפסה היא הזיכרון הדורבני של הפרויקט ושל הארגון,
+    שמור כקבצים קריאים שאיש אינו תלוי בכלי כדי לקרוא — ומקושר מספיק כדי
+    שאפשר יהיה לשלוף ממנו בדיוק את מה שרלוונטי למשימה אחת, במקום להטביע את
+    מי שעובד עליה בכל מה שאי-פעם נכתב.
+  </div>
+</section>
+
+</body>
+</html>
