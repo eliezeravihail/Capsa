@@ -1,6 +1,6 @@
 # Capsa core — principles & grammar (every format inherits this)
 
-**Version 0.4.0.** The **core** is the conceptual infrastructure shared by every
+**Version 0.5.0.** The **core** is the conceptual infrastructure shared by every
 capsa format. It defines *how* a capsule is shaped — **never which records
 exist** (that is each format's decision).
 
@@ -170,6 +170,37 @@ between capsules — an insight found in a project and later recognised as
 organisational — keeps principle 4 (single home) instead of being done by
 copy-paste, and does not sever the history.
 
+### Checking
+
+A capsule's own validator checks **conformance to this grammar** — shape,
+required fields, referential integrity. It does not and cannot check that a
+conforming record is *true*: that a cited `regression_ref` actually guards
+the defect it names, that a `source` accurately reflects who raised an
+issue, that prose in a decision's Context section is a fair account. Capsa
+documents; it does not enforce, the same relationship a PDF has to its
+reader — a PDF validator confirms a well-formed file and has no opinion on
+whether the invoice total on page 4 is correct. A capsule that follows the
+grammar but states something false is a broken *document*, not a defect in
+the format or a gap its checker failed to close.
+
+That boundary is deliberate, not a limitation to work around — but an
+operator MAY enforce more than conformance, on top, without forking the
+reference validator. Two things make that composable rather than a
+separate, incompatible tool:
+
+- **The findings shape is stable and public.** `{code, severity, path,
+  field, detail, message}` (per-format validators document their own code
+  list) is not an implementation detail — an operator's own checker,
+  however it verifies whatever policy it cares about, can emit findings in
+  the same shape and have them merge cleanly with the reference validator's
+  output.
+- **`X-` is reserved for operator-defined codes**, the same way `x-` is
+  reserved for private `rel` vocabulary (§Links). A format's own codes
+  (`E-*`/`W-*` by convention) MUST NOT collide with it. This is what lets a
+  finding say, unambiguously, "this is Capsa's grammar speaking" versus
+  "this is your organisation's policy speaking" — a distinction a reader
+  needs and a shared, un-prefixed code list cannot give them.
+
 ## Manifest
 Every capsule has `core/capsule.yaml` declaring `capsa_core`, `format`, and the
 capsule's identity. Records live under the **format** directory beside `core/`.
@@ -180,6 +211,11 @@ backward-compatible, MAJOR is breaking (a consumer MUST refuse a MAJOR it does
 not support). A format versions itself independently through `format_version`.
 
 Changelog:
+- **0.5.0** — §Checking: the validator checks conformance, not truth, and
+  `X-` is reserved for operator-defined finding codes so an operator's own
+  stricter enforcement composes with the reference validator's output
+  instead of forking it. Documentation only — no new field, no behavior
+  change to any existing check. Additive.
 - **0.4.0** — placement as a statement of scope, and the normative/descriptive
   duty it puts on a format (§Placement); relative internal addresses
   (§Addresses); a link may not restate the tree (§Links). The first two are

@@ -1,4 +1,4 @@
-capsa_version: "0.6.0"
+capsa_version: "0.6.1"
 project:
   name: "Netron"
   slug: netron

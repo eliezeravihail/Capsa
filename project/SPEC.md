@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.6.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.4.0
+**Version 0.6.1** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.5.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -692,9 +692,12 @@ from the two directions it can be lost.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.6.0**, and inherits core v0.4.0.
+This document defines version **0.6.1**, and inherits core v0.5.0.
 
 Changelog:
+- **0.6.1** — inherits core v0.5.0 (§Checking: the validator checks
+  conformance, not truth; `X-` reserved for operator-defined finding
+  codes). No change to this document's own rules or fields — PATCH.
 - **0.6.0** — the `platforms/` record type is **removed** (§2.5, §4.14), and
   `scoped_status[].scope` becomes an ordinary internal address that may name
   any record instead of `line:`/`platform:` (§2.5). Breaking for a capsule
