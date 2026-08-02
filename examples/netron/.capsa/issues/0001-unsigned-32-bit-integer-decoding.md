@@ -46,8 +46,12 @@ back, this test might not catch it; a crash-on-parse bug, it would.
 
 That gap — a mechanically-enforced field whose presence the validator
 checks, but whose *meaning* ("this specific defect is now guarded against
-regressing") nothing checks — is real enough to be worth reporting to
-Capsa itself rather than papering over here. See
-`.capsa/issues/` in the Capsa repository (opened as part of this
-exercise) for the write-up.
+regressing") nothing checks — was reported to Capsa itself
+(`.capsa/issues/0003-regression-ref-presence-not-meaning.md`) rather than
+papered over here, and **rejected on review**: Capsa documents, it
+doesn't enforce truth, so a validator that checks a field is present
+without checking the claim inside it is true is not a defect — it's the
+same relationship a PDF validator has to a PDF's content. See
+`.capsa/insights/dev/format-is-not-enforcement.md` in the Capsa
+repository.
 
