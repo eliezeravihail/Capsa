@@ -3,7 +3,7 @@ title: "moov atom is written last, so a truncated file is unplayable"
 kind: risk
 severity: S3
 status: triaged
-source: agent
+source: "an agent, reviewing failure-mode coverage"
 owner: sam
 opened: 2026-07-23
 triaged: 2026-07-23

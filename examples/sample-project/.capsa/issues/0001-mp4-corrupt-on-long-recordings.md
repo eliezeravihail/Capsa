@@ -4,7 +4,7 @@ title: "MP4 corrupt when recording exceeds 2GB"
 kind: bug
 severity: S1
 status: closed
-source: ceo
+source: "the founder, during a 10-minute stress test"
 owner: sam
 opened: 2026-07-21
 triaged: 2026-07-21

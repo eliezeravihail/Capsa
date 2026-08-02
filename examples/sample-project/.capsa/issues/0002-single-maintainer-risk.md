@@ -4,7 +4,7 @@ title: "Capture pipeline knowledge concentrated in one person"
 kind: risk
 severity: S3
 status: triaged
-source: agent
+source: "an agent, during a codebase-wide ownership sweep"
 owner: alex
 opened: 2026-07-23
 triaged: 2026-07-24

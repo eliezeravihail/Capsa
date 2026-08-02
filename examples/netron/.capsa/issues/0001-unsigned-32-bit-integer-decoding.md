@@ -4,7 +4,7 @@ title: "Unsigned 32-bit integer decoding was wrong across several parsers"
 kind: bug
 severity: S2
 status: closed
-source: system
+source: "Lutz Roeder, maintainer — found and fixed in the same commit"
 owner: "Lutz Roeder"
 opened: 2026-01-08
 triaged: 2026-01-08

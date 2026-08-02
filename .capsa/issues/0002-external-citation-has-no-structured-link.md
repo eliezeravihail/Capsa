@@ -4,7 +4,7 @@ title: "No structured way to cite an external, non-capsule source (a GitHub issu
 kind: risk
 severity: S3
 status: triaged
-source: agent
+source: "Claude, AI agent — Netron capability-test session"
 owner: null
 opened: 2026-08-02
 triaged: 2026-08-02

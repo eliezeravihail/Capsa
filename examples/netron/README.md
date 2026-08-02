@@ -14,13 +14,18 @@ commit SHA, a file, a dated tag, a linked issue/PR) rather than asserting
 facts on the capsule's own authority.
 
 Four friction points surfaced while building it, filed against Capsa
-itself rather than smoothed over here. Two stood as real gaps; one was
-re-examined and rejected:
+itself rather than smoothed over here: one is fixed, one was re-examined
+and rejected, two are still open.
 
-- **`.capsa/issues/0001-source-enum-assumes-a-company.md`** — an issue's
-  `source` (`ceo | system | agent`) has no honest value for "the solo
-  open-source maintainer found and fixed this himself" — the actual case
-  for `issues/0001-unsigned-32-bit-integer-decoding.md` below. Open.
+- **`.capsa/issues/0001-source-enum-assumes-a-company.md`** — **fixed.**
+  An issue's `source` (`ceo | system | agent`) had no honest value for
+  "the solo open-source maintainer found and fixed this himself" — the
+  actual case for `issues/0001-unsigned-32-bit-integer-decoding.md`
+  below. Checked first whether the field did any checkable work anywhere
+  in the spec — it didn't, unlike `severity`/`status` — so the fix wasn't
+  a bigger enum, it was dropping the enum: `source` is now an optional
+  free-text name and capacity (`"Lutz Roeder, maintainer"`), documentation
+  rather than a forced category.
 - **`.capsa/issues/0002-external-citation-has-no-structured-link.md`** —
   `links[].to` can address an internal record or another Capsa capsule,
   but has no way to cite an external, non-capsule source (a GitHub

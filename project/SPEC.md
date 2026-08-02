@@ -1,6 +1,6 @@
 # Capsa Specification — the project format
 
-**Version 0.6.1** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.5.0
+**Version 0.7.0** · inherits [`core/PRINCIPLES.md`](../core/PRINCIPLES.md) v0.5.0
 
 Capsa is a file format for a project's management capsule — the durable,
 portable record of what a project needs, plans, decides, discusses, fixes,
@@ -447,7 +447,7 @@ it.
 | `kind` | ✓ | enum | `bug` \| `risk` \| `task` |
 | `severity` | | enum\|null | `S1`..`S4`; null until triaged |
 | `status` | ✓ | enum | `new` \| `triaged` \| `in_progress` \| `awaiting_verification` \| `closed` \| `rejected` |
-| `source` | ✓ | enum | `ceo` \| `system` \| `agent` |
+| `source` | | string\|null | who reported it, and in what capacity — e.g. `"Lutz Roeder, maintainer"`, `"CI, flaky-test detector"` |
 | `owner` | | string\|null | one owner from triage to close |
 | `opened` | ✓ | date | |
 | `triaged` | | date\|null | starts the SLA clock (targets are operator policy) |
@@ -463,6 +463,15 @@ Checkable claims: *no `closed` bug without `fix_commit` and
 `regression_ref`*; *no open `S1`* (a release gate an operator can enforce).
 A `risk` uses the same lifecycle; `closed` means mitigated-with-evidence or
 consciously retired (`rejected` with rationale).
+
+*Why `source` is prose, not a fixed vocabulary:* an earlier version closed it
+to `ceo`/`system`/`agent` — categories from one specific way of running a
+project. No conformance rule has ever read `source` (unlike `severity` or
+`status`, which gate real checks), so the closed set bought nothing but a
+forced, sometimes false, choice: a solo maintainer who found and fixed their
+own bug is neither a company's CEO nor an automated system. `source` is a
+documentation field, not an authority or enforcement mechanism — it exists
+so a reader knows who to ask, not so a machine can gate on it.
 
 ### 4.6 Dependency (`dependencies/<ecosystem>-<name>.md`) and `NOTICES`
 
@@ -692,9 +701,17 @@ from the two directions it can be lost.
 - MAJOR — breaking. Consumers MUST refuse a capsule whose MAJOR they do not
   support.
 
-This document defines version **0.6.1**, and inherits core v0.5.0.
+This document defines version **0.7.0**, and inherits core v0.5.0.
 
 Changelog:
+- **0.7.0** — an issue's `source` (§4.5) is no longer a closed
+  `ceo|system|agent` enum; it's an OPTIONAL `string|null` — a name and a
+  capacity (`"Jane Doe, maintainer"`), not a forced category. No
+  conformance rule ever read `source`, so the enum bought a false choice
+  and nothing else — found while documenting a real solo-maintainer
+  project the three values couldn't describe honestly. Additive: a
+  capsule with `source: ceo` still conforms, since the old values remain
+  valid strings; nothing is now required that wasn't before.
 - **0.6.1** — inherits core v0.5.0 (§Checking: the validator checks
   conformance, not truth; `X-` reserved for operator-defined finding
   codes). No change to this document's own rules or fields — PATCH.
