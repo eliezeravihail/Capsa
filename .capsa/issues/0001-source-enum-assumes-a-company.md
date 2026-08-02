@@ -9,7 +9,7 @@ owner: null
 opened: 2026-08-02
 triaged: 2026-08-02
 closed: 2026-08-02
-fix_commit: null
+fix_commit: "6191bf84760ee56d31b1712ff4a74bc14c3eac6f"
 fix_plan_ref: null
 regression_ref: null
 reopens: 0
