@@ -198,7 +198,7 @@ only reads — it never writes or "fixes."
 
 ## Status
 
-`capsa_version` **0.6.0**, on core **0.4.0** — see [`VERSION`](./VERSION),
+`capsa_version` **0.6.1**, on core **0.5.0** — see [`VERSION`](./VERSION),
 [`SPEC.md`](./project/SPEC.md) and [`core/PRINCIPLES.md`](./core/PRINCIPLES.md). The
 format is young; the shape is deliberately small so it can stabilize — and
 shrinking it counts: 0.6.0 removed a record type, because "runs on Windows"
