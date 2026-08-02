@@ -1,0 +1,7 @@
+capsa_version: "0.6.0"
+project:
+  name: "Netron"
+  slug: netron
+  repo: "https://github.com/lutzroeder/netron"
+  created: 2017-12-04
+status: maintained
