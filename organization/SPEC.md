@@ -1,4 +1,4 @@
-# Capsa — organization format (v0.2.1)
+# Capsa — organization format (v0.2.2)
 
 The **organization** capsule: a company's durable memory — its people (agents
 *and* humans), roles, teams, presets, know-how, and the projects it runs. It
@@ -8,9 +8,9 @@ any one project's capsule.
 
 ## Manifest — `core/capsule.yaml`
 ```yaml
-capsa_core: "0.5.0"
+capsa_core: "0.6.0"
 format: organization
-format_version: "0.2.1"
+format_version: "0.2.2"
 organization: { name, slug, created }
 status: planning|active|maintained|paused|archived
 ```
@@ -79,6 +79,8 @@ is a guess imported from the project format. A type is earned only where the
 org genuinely needs it.
 
 ## Changelog
+- **0.2.2** — inherits core v0.6.0 (§Addresses: Web address form). No
+  change to this document's own rules or fields — PATCH.
 - **0.2.1** — inherits core v0.5.0 (§Checking). No change to this
   document's own rules or fields — PATCH.
 - **0.2.0** — the normative/descriptive classification core v0.4.0 requires,

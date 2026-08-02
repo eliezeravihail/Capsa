@@ -7,15 +7,25 @@ supersedes: null
 superseded_by: null
 discussion_ref: null
 tags: [desktop, linux, packaging]
+links:
+  - {rel: discussed_in, to: "https://github.com/lutzroeder/netron/pull/1500"}
 ---
 
 ## Context
 
 Netron had shipped AppImage, Snap, `.deb`, and `.rpm` builds for Linux.
-Issue/PR #1500 ("Linux Support") states two independent problems: AppImage
-builds broke on an upstream Electron issue
+The linked issue/PR ("Linux Support") states two independent problems:
+AppImage builds broke on an upstream Electron issue
 (`electron/electron#42510`), and Snap was dropped for "maintenance
 complexity" — a judgment call, not a forcing bug, and recorded as one.
+
+The `links` entry above is a **Web address** (core §Addresses, added
+0.6.0 for exactly this): the real source this decision came from, cited
+as structured data instead of a sentence naming a PR number that a
+checker can't follow. It's never resolved by the validator — checking it
+would mean a network request, which the format forbids outright — but it
+is checked for shape, and it's traversable by anything that wants to
+follow it.
 
 ## Decision
 

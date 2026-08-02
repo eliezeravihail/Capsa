@@ -431,9 +431,14 @@ def check_record_dirs(base: Path, root: Path | None = None) -> None:
             eco = need(fm, f, "ecosystem", str, {"pypi", "npm", "vendored-js", "other"})
             tier = need(fm, f, "tier", str, {"allow", "review", "deny", "unknown"})
             need(fm, f, "direct", bool)
-            if eco and name and f.name != f"{eco}-{name}.md":
-                err(f, f"filename should be {eco}-{name}.md (SPEC §2.2)",
-                    "E-DEP-NAME", detail=f.name)
+            if eco and name:
+                # `/` cannot appear in a filename (npm scoped packages:
+                # @playwright/test) — escaped as `--` in the derived name,
+                # never in the `name` field itself (SPEC §2.2).
+                expected = f"{eco}-{name.replace('/', '--')}.md"
+                if f.name != expected:
+                    err(f, f"filename should be {expected} (SPEC §2.2)",
+                        "E-DEP-NAME", detail=f.name)
             if tier == "deny" and fm.get("decision_ref") is None:
                 err(f, "deny-tier dependency without admitting decision_ref "
                     "(SPEC §4.6)", "E-DEP-DENY-NODECISION", "decision_ref")
@@ -570,9 +575,12 @@ def check_components(root: Path) -> None:
 
 
 REL = re.compile(r"^[a-z][a-z0-9_-]*$")
-# `@…` external, `./…` and `../…` relative, anything else absolute from the
-# capsule root — the prefix alone tells them apart (core §Addresses).
-ADDR = re.compile(r"^(@?[A-Za-z0-9][A-Za-z0-9._/-]*|\.{1,2}/[A-Za-z0-9._/-]*)$")
+# `@…` external, `./…` and `../…` relative, `http(s)://…` Web (never
+# resolved — a network request would violate core principle 1, passive),
+# anything else absolute from the capsule root — the prefix alone tells
+# them apart (core §Addresses).
+ADDR = re.compile(
+    r"^(https?://\S+|@?[A-Za-z0-9][A-Za-z0-9._/-]*|\.{1,2}/[A-Za-z0-9._/-]*)$")
 
 
 def resolve_addr(to: str, src: Path, root: Path) -> str | None:
@@ -661,8 +669,8 @@ def check_links(root: Path) -> None:
                 err(f, f"link `to` {to!r} is not a valid address",
                     "E-LINK-ADDR", f"{field}.to", str(to))
                 continue
-            if to.startswith("@"):
-                continue                      # external — deliberately unchecked
+            if to.startswith("@") or to.startswith(("http://", "https://")):
+                continue                      # external / Web — never resolved
             target = resolve_addr(to, f, root)
             if target is None:
                 err(f, f"relative link target {to!r} resolves above the "
