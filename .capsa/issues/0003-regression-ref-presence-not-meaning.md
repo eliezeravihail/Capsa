@@ -3,12 +3,12 @@ id: 3
 title: "Validator checks a closed bug's regression_ref is present, not that it actually guards against the defect"
 kind: risk
 severity: S3
-status: triaged
+status: rejected
 source: agent
 owner: null
 opened: 2026-08-02
 triaged: 2026-08-02
-closed: null
+closed: 2026-08-02
 fix_commit: null
 fix_plan_ref: null
 regression_ref: null
@@ -34,10 +34,21 @@ regression_ref" is currently a weaker guarantee than SPEC's own framing
 ("closure evidence in checkable form") implies: it verifies the shape of
 an answer, not the answer.
 
-Not proposing a fix here — verifying that a cited test actually exercises
-the fixed code path is likely undecidable in general (it would require
-running the test against the pre-fix code and confirming it fails, which
-the read-only validator by design does not do). Filed so the limit of
-what this check actually guarantees is a visible fact instead of an
-implied one — the same principle SPEC §2.3 already applies to
-verification blocks generally.
+## Rejected — 2026-08-02
+
+The premise was wrong, not just the fix. Capsa is a documentation format,
+not an enforcement mechanism — the same relationship a PDF has to its
+reader: a PDF validator confirms the file is well-formed, never that the
+invoice total inside it is correct. Asking the same of `regression_ref`
+was asking the validator to verify that a citation is *true* (that it
+really guards this defect), when its actual and only job is to verify
+that the record is *shaped* correctly (a citation is present, in the
+field meant to hold one).
+
+A capsule where `regression_ref` cites weak or unrelated coverage is
+exactly a "broken document" in the PDF sense: the format was followed,
+the content is wrong, and that is a fact about whoever wrote the record —
+visible to a human reader, exactly as intended — not a defect in the
+format or a gap the validator failed to close. Nothing here needs
+building. `insights/dev/format-is-not-enforcement.md` records the
+principle so it doesn't get relitigated as a bug report again.

@@ -13,28 +13,32 @@ public GitHub pages expose? Every record here cites its evidence (a
 commit SHA, a file, a dated tag, a linked issue/PR) rather than asserting
 facts on the capsule's own authority.
 
-Four friction points surfaced while building it, real enough to be filed
-against Capsa itself rather than smoothed over here:
+Four friction points surfaced while building it, filed against Capsa
+itself rather than smoothed over here. Two stood as real gaps; one was
+re-examined and rejected:
 
 - **`.capsa/issues/0001-source-enum-assumes-a-company.md`** — an issue's
   `source` (`ceo | system | agent`) has no honest value for "the solo
   open-source maintainer found and fixed this himself" — the actual case
-  for `issues/0001-unsigned-32-bit-integer-decoding.md` below.
+  for `issues/0001-unsigned-32-bit-integer-decoding.md` below. Open.
 - **`.capsa/issues/0002-external-citation-has-no-structured-link.md`** —
   `links[].to` can address an internal record or another Capsa capsule,
   but has no way to cite an external, non-capsule source (a GitHub
-  issue/PR, an RFC) as structured data; it falls back to prose.
-- **`.capsa/issues/0003-regression-ref-presence-not-meaning.md`** — the
-  validator enforces that a closed bug's `regression_ref` is *present*,
-  but nothing checks that the cited evidence actually guards against the
-  specific defect regressing, as opposed to a pre-existing test that
-  happens to touch the same code.
+  issue/PR, an RFC) as structured data; it falls back to prose. Open.
+- **`.capsa/issues/0003-regression-ref-presence-not-meaning.md`** —
+  **rejected.** The original finding was that the validator checks a
+  closed bug's `regression_ref` is *present* without checking that the
+  cited evidence actually guards the specific defect. Correct as an
+  observation, wrong as a complaint: Capsa documents, it doesn't enforce
+  truth, the same way a PDF validator confirms a file is well-formed and
+  has no opinion on whether the invoice total inside it is right. See
+  `.capsa/insights/dev/format-is-not-enforcement.md`.
 - **`.capsa/issues/0004-scoped-package-name-breaks-dependency-filename.md`**
   — the `<ecosystem>-<name>.md` naming rule is unsatisfiable for any npm
   scoped package (`@playwright/test`, `@babel/core`, ...), since a
   filename can't hold `/`. Reproduces live in this capsule's own
   `dependencies/npm-playwright-test.md`, left deliberately
-  non-conforming rather than hidden.
+  non-conforming rather than hidden. Open.
 
 See `examples/netron/.capsa/insights/dev/` for what else this exercise
 found — a single-maintainer project with no organization capsule to
